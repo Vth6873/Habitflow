@@ -1,0 +1,2471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HabitFlow — Build Your Future</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HabitFlow">
+<meta name="theme-color" content="#7c5cfc">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C3Y7R3NHKX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-C3Y7R3NHKX');
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: rgba(255,255,255,0.07);
+    --accent: #7c5cfc;
+    --accent2: #fc5c7d;
+    --accent3: #5cf4fc;
+    --text: #f0f0f8;
+    --muted: #6b6b80;
+    --success: #5cfca0;
+    --gold: #fcd05c;
+  }
+
+  /* ── THEMA'S ── */
+  body.theme-light {
+    --bg: #f4f4f8;
+    --surface: #ffffff;
+    --surface2: #eeeef4;
+    --border: rgba(0,0,0,0.08);
+    --text: #111118;
+    --muted: #8888a0;
+    --accent: #7c5cfc;
+    --accent2: #fc5c7d;
+    --accent3: #0099bb;
+    --gold: #e08800;
+  }
+  body.theme-light::before { display:none; }
+
+  body.theme-sunset {
+    --bg: #1a0a00;
+    --surface: #241408;
+    --surface2: #2e1c0e;
+    --border: rgba(255,150,50,0.1);
+    --accent: #ff7c2a;
+    --accent2: #ffb347;
+    --accent3: #ff4d6d;
+    --text: #fff4ec;
+    --muted: #a07050;
+    --gold: #ffb347;
+  }
+
+  body.theme-champion {
+    --bg: #000d1a;
+    --surface: #001428;
+    --surface2: #001e38;
+    --border: rgba(0,200,255,0.1);
+    --accent: #00c8ff;
+    --accent2: #ffd700;
+    --accent3: #00ffaa;
+    --text: #e8f4ff;
+    --muted: #446688;
+    --gold: #ffd700;
+  }
+
+  /* Thema selector modal */
+  .theme-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px); z-index:200; align-items:flex-end; justify-content:center; }
+  .theme-modal.open { display:flex; }
+  .theme-sheet { background:var(--surface); border:1px solid var(--border); border-radius:24px 24px 0 0; padding:24px 20px 40px; width:100%; max-width:420px; }
+  .theme-handle { width:40px; height:4px; border-radius:99px; background:var(--border); margin:0 auto 20px; }
+  .theme-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:4px; }
+  .theme-btn { padding:16px; border-radius:14px; border:2px solid var(--border); cursor:pointer; text-align:left; transition:all 0.2s; background:var(--surface2); }
+  .theme-btn.active { border-color:var(--accent); }
+  .theme-btn:hover { border-color:var(--accent); transform:translateY(-2px); }
+  .theme-preview { width:100%; height:40px; border-radius:8px; margin-bottom:10px; }
+  .theme-name { font-family:'Syne',sans-serif; font-size:0.88rem; font-weight:700; color:var(--text); }
+  .theme-desc { font-size:0.72rem; color:var(--muted); margin-top:2px; }
+
+  /* Reminder modal */
+  .reminder-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px); z-index:200; align-items:flex-end; justify-content:center; }
+  .reminder-modal.open { display:flex; }
+  .reminder-sheet { background:var(--surface); border:1px solid var(--border); border-radius:24px 24px 0 0; padding:24px 20px 40px; width:100%; max-width:420px; }
+  .time-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin:14px 0; }
+  .time-btn { padding:12px 8px; border-radius:12px; border:2px solid var(--border); background:var(--surface2); color:var(--text); font-family:'DM Sans',sans-serif; font-size:0.85rem; cursor:pointer; text-align:center; transition:all 0.2s; }
+  .time-btn.active { border-color:var(--accent); background:rgba(124,92,252,0.15); color:var(--accent); }
+  .time-btn:hover { border-color:var(--accent); }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 20%, rgba(124,92,252,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 50% at 80% 80%, rgba(252,92,125,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 30% 30% at 60% 10%, rgba(92,244,252,0.06) 0%, transparent 50%);
+    pointer-events:none; z-index:0;
+  }
+
+  .page { display:none; position:relative; z-index:1; }
+  .page.active { display:block; }
+
+  nav {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px; max-width:420px; margin:0 auto;
+    position:relative; z-index:1;
+  }
+  .logo {
+    font-family:'Syne',sans-serif; font-weight:800; font-size:1.3rem;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    letter-spacing:-0.02em;
+  }
+  .streak-badge {
+    display:flex; align-items:center; gap:6px;
+    background:rgba(252,208,92,0.1); border:1px solid rgba(252,208,92,0.2);
+    border-radius:20px; padding:6px 14px;
+    font-size:0.82rem; font-weight:500; color:var(--gold);
+  }
+  .streak-badge .fire { animation:pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+
+  .hero { padding:20px 20px 16px; max-width:420px; margin:0 auto; }
+  .greeting { font-size:0.78rem; font-weight:500; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent3); margin-bottom:6px; }
+  .hero h1 { font-family:'Syne',sans-serif; font-size:1.9rem; font-weight:800; line-height:1.1; letter-spacing:-0.03em; margin-bottom:4px; }
+  .hero h1 span { background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .hero-sub { font-size:0.88rem; color:var(--muted); font-weight:300; }
+
+  .xp-section {
+    margin:0 20px 14px; background:var(--surface);
+    border:1px solid var(--border); border-radius:16px; padding:14px 16px;
+    max-width:380px; margin-left:auto; margin-right:auto;
+  }
+  .xp-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .level-tag { font-family:'Syne',sans-serif; font-size:0.78rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent); }
+  .xp-text { font-size:0.78rem; color:var(--muted); }
+  .xp-text strong { color:var(--text); }
+  .xp-track { height:8px; background:var(--surface2); border-radius:99px; overflow:hidden; }
+  .xp-fill { height:100%; border-radius:99px; background:linear-gradient(90deg,var(--accent),var(--accent2)); width:0%; transition:width 1.2s cubic-bezier(0.23,1,0.32,1); position:relative; }
+  .xp-fill::after { content:''; position:absolute; right:0; top:50%; transform:translateY(-50%); width:12px; height:12px; border-radius:50%; background:white; box-shadow:0 0 8px var(--accent2); }
+
+  .ai-card {
+    margin:0 20px 14px;
+    background:linear-gradient(135deg,rgba(124,92,252,0.12),rgba(252,92,125,0.08));
+    border:1px solid rgba(124,92,252,0.25); border-radius:18px; padding:16px;
+    max-width:380px; margin-left:auto; margin-right:auto;
+    cursor:pointer; transition:transform 0.2s, border-color 0.2s; overflow:hidden; position:relative;
+  }
+  .ai-card:hover { transform:translateY(-2px); border-color:rgba(124,92,252,0.45); }
+  .ai-card::before { content:''; position:absolute; top:-30px; right:-30px; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle,rgba(124,92,252,0.2),transparent 70%); }
+  .ai-label { display:flex; align-items:center; gap:7px; font-size:0.72rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--accent); margin-bottom:8px; }
+  .ai-dot { width:7px; height:7px; border-radius:50%; background:var(--accent); animation:blink 1.5s ease-in-out infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .ai-text { font-size:0.9rem; line-height:1.55; color:var(--text); font-weight:300; min-height:40px; }
+  .ai-text .highlight { color:var(--accent3); font-weight:500; }
+  .ai-refresh { margin-top:10px; font-size:0.72rem; color:var(--muted); }
+
+  .section-header { display:flex; align-items:center; justify-content:space-between; margin:0 20px 10px; max-width:380px; margin-left:auto; margin-right:auto; }
+  .section-title { font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); }
+  .add-btn { width:28px; height:28px; border-radius:8px; background:var(--surface2); border:1px solid var(--border); color:var(--text); font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+  .add-btn:hover { background:var(--accent); border-color:var(--accent); }
+
+  .habits-list { display:flex; flex-direction:column; gap:10px; margin:0 20px; max-width:380px; margin-left:auto; margin-right:auto; }
+
+  .empty-state { text-align:center; padding:36px 20px; color:var(--muted); border:1px dashed var(--border); border-radius:16px; }
+  .empty-state .empty-icon { font-size:2.4rem; margin-bottom:10px; }
+  .empty-state p { font-size:0.85rem; line-height:1.6; }
+  .empty-state button { margin-top:14px; padding:10px 22px; border-radius:10px; background:var(--accent); border:none; color:white; font-family:'Syne',sans-serif; font-weight:700; font-size:0.85rem; cursor:pointer; }
+
+  .habit-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:14px 16px; display:flex; align-items:center; gap:14px; cursor:pointer; transition:all 0.25s cubic-bezier(0.23,1,0.32,1); position:relative; overflow:hidden; animation:slideIn 0.35s cubic-bezier(0.23,1,0.32,1) both; }
+  @keyframes slideIn { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+  .habit-card:hover { transform:translateX(4px); border-color:rgba(255,255,255,0.12); }
+  .habit-card.done { background:rgba(92,252,160,0.04); border-color:rgba(92,252,160,0.15); }
+  .habit-card.done .habit-name { text-decoration:line-through; color:var(--muted); }
+  .habit-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
+  .habit-info { flex:1; min-width:0; }
+  .habit-name { font-size:0.93rem; font-weight:500; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:color 0.3s; }
+  .habit-meta { display:flex; align-items:center; gap:8px; }
+  .habit-streak { font-size:0.72rem; color:var(--gold); font-weight:500; }
+  .habit-time { font-size:0.72rem; color:var(--muted); }
+  .dots-row { display:flex; gap:4px; margin-top:5px; }
+  .dot { width:6px; height:6px; border-radius:50%; background:var(--surface2); transition:background 0.3s; }
+  .dot.filled { background:var(--accent); }
+  .dot.filled.today { background:var(--success); box-shadow:0 0 6px var(--success); }
+  .dot.today-dot { outline:2px solid var(--accent3); outline-offset:1px; border-radius:50%; }
+
+  /* Delete modal */
+  .delete-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(8px); z-index:300; align-items:center; justify-content:center; padding:20px; }
+  .delete-modal.open { display:flex; }
+  .delete-sheet { background:var(--surface); border:1px solid var(--border); border-radius:24px; padding:28px 24px; width:100%; max-width:360px; text-align:center; animation:slideIn 0.3s cubic-bezier(0.23,1,0.32,1); }
+  .delete-icon { font-size:3rem; margin-bottom:12px; }
+  .delete-title { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; margin-bottom:8px; }
+  .delete-desc { font-size:0.85rem; color:var(--muted); line-height:1.5; margin-bottom:20px; }
+  .delete-streak { display:inline-block; background:rgba(252,208,92,0.1); border:1px solid rgba(252,208,92,0.25); border-radius:10px; padding:8px 16px; font-size:0.85rem; color:var(--gold); font-weight:600; margin-bottom:20px; }
+  .delete-btns { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .delete-cancel { padding:13px; border-radius:12px; background:var(--surface2); border:1px solid var(--border); color:var(--text); font-family:'Syne',sans-serif; font-weight:700; font-size:0.9rem; cursor:pointer; transition:all 0.2s; }
+  .delete-confirm { padding:13px; border-radius:12px; background:linear-gradient(135deg,#fc5c7d,#e0334d); border:none; color:white; font-family:'Syne',sans-serif; font-weight:700; font-size:0.9rem; cursor:pointer; transition:all 0.2s; }
+  .delete-confirm:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(252,92,125,0.4); }
+
+  /* STREAK FREEZE */
+  .freeze-bar { margin:0 20px 14px; max-width:380px; margin-left:auto; margin-right:auto; background:linear-gradient(135deg,rgba(92,244,252,0.08),rgba(124,92,252,0.08)); border:1px solid rgba(92,244,252,0.2); border-radius:14px; padding:12px 16px; display:flex; align-items:center; gap:12px; cursor:pointer; transition:all 0.2s; }
+  .freeze-bar:hover { transform:translateY(-1px); border-color:rgba(92,244,252,0.4); }
+  .freeze-icon { font-size:1.6rem; flex-shrink:0; }
+  .freeze-info { flex:1; }
+  .freeze-title { font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:700; color:var(--accent3); }
+  .freeze-desc { font-size:0.72rem; color:var(--muted); margin-top:2px; }
+  .freeze-count { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:800; color:var(--accent3); }
+
+  /* XP MULTIPLIER */
+  .xp-multiplier { display:inline-flex; align-items:center; gap:4px; background:rgba(252,208,92,0.15); border:1px solid rgba(252,208,92,0.3); border-radius:8px; padding:3px 8px; font-size:0.72rem; font-weight:700; color:var(--gold); font-family:'Syne',sans-serif; margin-left:8px; }
+
+  /* COUNTDOWN TIMER */
+  .countdown-bar { margin:0 20px 14px; max-width:380px; margin-left:auto; margin-right:auto; border-radius:14px; padding:12px 16px; display:none; align-items:center; gap:12px; }
+  .countdown-bar.urgent { display:flex; background:rgba(252,92,125,0.08); border:1px solid rgba(252,92,125,0.25); }
+  .countdown-bar.warning { display:flex; background:rgba(252,208,92,0.08); border:1px solid rgba(252,208,92,0.2); }
+  .countdown-time { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; }
+  .countdown-bar.urgent .countdown-time { color:var(--accent2); }
+  .countdown-bar.warning .countdown-time { color:var(--gold); }
+
+  /* DAILY MISSIONS */
+  .missions-wrap { margin:0 20px 14px; max-width:380px; margin-left:auto; margin-right:auto; }
+  .missions-toggle { display:flex; align-items:center; justify-content:space-between; cursor:pointer; padding:10px 14px; background:var(--surface); border:1px solid var(--border); border-radius:12px; transition:all 0.2s; user-select:none; }
+  .missions-toggle.open { border-radius:12px 12px 0 0; border-bottom-color:transparent; }
+  .missions-toggle:hover { border-color:var(--accent); }
+  .missions-toggle-left { display:flex; align-items:center; gap:8px; font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:700; }
+  .missions-toggle-right { display:flex; align-items:center; gap:8px; }
+  .missions-done-count { font-size:0.72rem; color:var(--accent); font-weight:600; }
+  .missions-arrow { color:var(--muted); font-size:0.8rem; transition:transform 0.2s; }
+  .missions-toggle.open .missions-arrow { transform:rotate(180deg); }
+  .missions-body { background:var(--surface); border:1px solid var(--border); border-top:none; border-radius:0 0 12px 12px; padding:8px 14px 12px; display:none; }
+  .missions-body.open { display:block; }
+  .mission-item { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); }
+  .mission-item:last-child { border-bottom:none; }
+  .mission-check { width:22px; height:22px; border-radius:6px; border:2px solid var(--border); background:none; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:0.8rem; transition:all 0.2s; }
+  .mission-check.done { background:var(--success); border-color:var(--success); color:#0a0a0f; }
+  .mission-info { flex:1; }
+  .mission-name { font-size:0.82rem; font-weight:500; }
+  .mission-name.done { text-decoration:line-through; color:var(--muted); }
+  .mission-reward { font-size:0.7rem; color:var(--accent); font-weight:600; }
+  .missions-skip { width:100%; margin-top:10px; padding:8px; background:none; border:1px solid var(--border); border-radius:8px; color:var(--muted); font-size:0.75rem; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.2s; }
+  .missions-skip:hover { border-color:var(--accent2); color:var(--accent2); }
+
+  /* BEWIJS OPTIES */
+  .proof-opts { display:flex; gap:8px; margin-top:6px; }
+  .proof-opt { flex:1; padding:10px 6px; border-radius:12px; border:2px solid var(--border); background:var(--surface2); color:var(--muted); font-size:0.76rem; cursor:pointer; text-align:center; transition:all 0.2s; font-family:'DM Sans',sans-serif; }
+  .proof-opt.active { border-color:var(--accent); color:var(--accent); background:rgba(124,92,252,0.1); }
+  .proof-opt:hover { border-color:var(--accent); }
+
+  /* BEWIJS MODAL */
+  .proof-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(12px); z-index:400; align-items:center; justify-content:center; padding:20px; }
+  .proof-modal.open { display:flex; }
+  .proof-sheet { background:var(--surface); border:1px solid var(--border); border-radius:24px; padding:28px 24px; width:100%; max-width:360px; text-align:center; }
+  .proof-title { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:800; margin-bottom:6px; }
+  .proof-sub { font-size:0.82rem; color:var(--muted); margin-bottom:20px; line-height:1.5; }
+  .timer-ring { width:140px; height:140px; margin:0 auto 20px; position:relative; }
+  .timer-ring svg { transform:rotate(-90deg); }
+  .timer-ring-bg { fill:none; stroke:var(--surface2); stroke-width:10; }
+  .timer-ring-fill { fill:none; stroke:url(#timerGrad); stroke-width:10; stroke-linecap:round; transition:stroke-dashoffset 1s linear; }
+  .timer-display { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; }
+  .proof-btn { padding:13px 24px; border-radius:14px; background:linear-gradient(135deg,var(--accent),var(--accent2)); border:none; color:white; font-family:'Syne',sans-serif; font-weight:700; font-size:0.9rem; cursor:pointer; margin:4px; transition:all 0.2s; }
+  .proof-btn.secondary { background:var(--surface2); border:1px solid var(--border); color:var(--muted); }
+  .photo-preview-img { width:100%; max-height:180px; object-fit:cover; border-radius:12px; margin-bottom:14px; display:none; }
+  .photo-upload-area { width:100%; padding:32px 20px; border:2px dashed var(--border); border-radius:14px; background:var(--surface2); color:var(--muted); cursor:pointer; font-size:0.88rem; margin-bottom:14px; transition:all 0.2s; }
+  .photo-upload-area:hover { border-color:var(--accent); color:var(--accent); }
+  .countdown-label { font-size:0.75rem; color:var(--muted); margin-top:1px; }
+  .check-btn { width:36px; height:36px; border-radius:10px; border:2px solid var(--border); background:transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.25s; font-size:0; color:var(--success); }
+  .check-btn:hover { border-color:var(--success); background:rgba(92,252,160,0.08); }
+  .habit-card.done .check-btn { background:rgba(92,252,160,0.15); border-color:var(--success); font-size:1rem; }
+
+  .stats-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin:14px 20px 0; max-width:380px; margin-left:auto; margin-right:auto; }
+  .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px 10px; text-align:center; }
+  .stat-num { font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; line-height:1; margin-bottom:5px; background:linear-gradient(135deg,var(--accent),var(--accent3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .stat-label { font-size:0.68rem; color:var(--muted); font-weight:500; }
+
+  /* PROGRESS */
+  .page-header { padding:24px 20px 16px; max-width:420px; margin:0 auto; }
+  .page-header h2 { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; letter-spacing:-0.02em; margin-bottom:4px; }
+  .page-header p { font-size:0.85rem; color:var(--muted); }
+  .progress-card { margin:0 20px 12px; background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:18px; max-width:380px; margin-left:auto; margin-right:auto; }
+  .progress-card h3 { font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); margin-bottom:14px; }
+  .week-labels { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; text-align:center; margin-bottom:6px; }
+  .week-labels span { font-size:0.6rem; color:var(--muted); font-weight:600; }
+  .week-cells { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; }
+  .week-cell { aspect-ratio:1; border-radius:8px; background:var(--surface2); display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:600; color:var(--muted); }
+  .week-cell.partial { background:rgba(124,92,252,0.2); color:var(--accent); }
+  .week-cell.full { background:var(--accent); color:white; }
+  .week-cell.today-cell { outline:2px solid var(--accent3); }
+  .habit-progress-item { margin-bottom:12px; }
+  .habit-progress-item:last-child { margin-bottom:0; }
+  .hp-header { display:flex; justify-content:space-between; margin-bottom:6px; }
+  .hp-name { font-size:0.88rem; font-weight:500; }
+  .hp-pct { font-size:0.78rem; color:var(--accent); font-weight:600; }
+  .hp-bar { height:6px; background:var(--surface2); border-radius:99px; overflow:hidden; }
+  .hp-fill { height:100%; border-radius:99px; background:linear-gradient(90deg,var(--accent),var(--accent2)); transition:width 1s cubic-bezier(0.23,1,0.32,1); }
+
+  /* COACH */
+  .chat-bubble { padding:12px 16px; border-radius:16px; font-size:0.88rem; line-height:1.5; max-width:85%; animation:slideIn 0.3s cubic-bezier(0.23,1,0.32,1); }
+  .chat-bubble.user { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:white; align-self:flex-end; border-bottom-right-radius:4px; }
+  .chat-bubble.ai { background:var(--surface); border:1px solid var(--border); color:var(--text); align-self:flex-start; border-bottom-left-radius:4px; }
+  .chat-bubble.typing { opacity:0.7; }
+  .quick-btn { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:7px 12px; color:var(--text); font-size:0.75rem; cursor:pointer; transition:all 0.2s; font-family:'DM Sans',sans-serif; white-space:nowrap; }
+  .quick-btn:hover { border-color:var(--accent); color:var(--accent); }
+  /* COACH old below */
+  .coach-intro { padding:24px 20px 16px; max-width:420px; margin:0 auto; }
+  .coach-avatar { width:60px; height:60px; border-radius:16px; margin-bottom:14px; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:1.7rem; }
+  .coach-intro h2 { font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:800; letter-spacing:-0.02em; margin-bottom:4px; }
+  .coach-intro p { font-size:0.85rem; color:var(--muted); line-height:1.5; }
+  .tips-list { display:flex; flex-direction:column; gap:10px; margin:0 20px; max-width:380px; margin-left:auto; margin-right:auto; }
+  .tip-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px; display:flex; gap:12px; align-items:flex-start; }
+  .tip-icon { font-size:1.3rem; flex-shrink:0; margin-top:2px; }
+  .tip-title { font-size:0.88rem; font-weight:600; margin-bottom:4px; }
+  .tip-body { font-size:0.81rem; color:var(--muted); line-height:1.5; font-weight:300; }
+
+  /* PROFILE */
+  .profile-top { padding:28px 20px 20px; max-width:420px; margin:0 auto; text-align:center; }
+  .avatar { width:76px; height:76px; border-radius:50%; margin:0 auto 14px; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:2rem; border:3px solid rgba(124,92,252,0.3); }
+  .profile-name { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; margin-bottom:4px; }
+  .profile-sub { font-size:0.82rem; color:var(--muted); }
+  .profile-stats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin:0 20px 16px; max-width:380px; margin-left:auto; margin-right:auto; }
+  .ps-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px 8px; text-align:center; }
+  .ps-num { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .ps-label { font-size:0.65rem; color:var(--muted); font-weight:500; margin-top:3px; }
+  .settings-list { margin:0 20px; max-width:380px; margin-left:auto; margin-right:auto; }
+  .settings-item { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px 18px; display:flex; align-items:center; gap:14px; margin-bottom:10px; cursor:pointer; transition:all 0.2s; }
+  .settings-item:hover { border-color:rgba(255,255,255,0.12); }
+  .settings-icon { font-size:1.2rem; width:32px; text-align:center; }
+  .settings-label { flex:1; font-size:0.9rem; font-weight:500; }
+  .settings-arrow { color:var(--muted); }
+
+  /* MODAL */
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(8px); z-index:100; display:flex; align-items:flex-end; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.3s; }
+  .modal-overlay.open { opacity:1; pointer-events:all; }
+  .modal { background:var(--surface); border:1px solid rgba(255,255,255,0.1); border-radius:24px 24px 0 0; padding:24px 20px 40px; width:100%; max-width:420px; transform:translateY(100%); transition:transform 0.4s cubic-bezier(0.23,1,0.32,1); }
+  .modal-overlay.open .modal { transform:translateY(0); }
+  .modal-handle { width:40px; height:4px; border-radius:99px; background:var(--border); margin:0 auto 22px; }
+  .modal h2 { font-family:'Syne',sans-serif; font-size:1.3rem; font-weight:800; margin-bottom:18px; letter-spacing:-0.02em; }
+  .emoji-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-bottom:16px; }
+  .emoji-btn { height:44px; border-radius:10px; background:var(--surface2); border:2px solid transparent; font-size:1.2rem; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; }
+  .emoji-btn:hover,.emoji-btn.selected { background:rgba(124,92,252,0.15); border-color:var(--accent); transform:scale(1.05); }
+  .input-group { margin-bottom:12px; }
+  .input-group label { display:block; font-size:0.75rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:7px; }
+  .input-group input,.input-group select { width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:12px 14px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:0.93rem; outline:none; transition:border-color 0.2s; }
+  .input-group input:focus,.input-group select:focus { border-color:var(--accent); }
+  .input-group input::placeholder { color:var(--muted); }
+  .input-group select option { background:var(--surface2); }
+  .create-btn { width:100%; padding:15px; border-radius:14px; background:linear-gradient(135deg,var(--accent),var(--accent2)); border:none; color:white; font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700; cursor:pointer; margin-top:4px; transition:all 0.2s; }
+  .create-btn:hover { transform:translateY(-1px); box-shadow:0 8px 24px rgba(124,92,252,0.35); }
+
+  /* BOTTOM NAV */
+  .bottom-nav { position:fixed; bottom:0; left:0; right:0; max-width:420px; margin:0 auto; background:rgba(10,10,15,0.92); backdrop-filter:blur(20px); border-top:1px solid var(--border); display:flex; padding:10px 0 24px; z-index:10; }
+  .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; padding:6px 0; transition:all 0.2s; opacity:0.4; }
+  .nav-item.active { opacity:1; }
+  .nav-icon { font-size:1.25rem; }
+  .nav-label { font-size:0.62rem; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; }
+  .nav-item.active .nav-label { color:var(--accent); }
+
+  .toast { position:fixed; top:20px; left:50%; transform:translateX(-50%) translateY(-80px); background:var(--success); color:#0a0a0f; padding:11px 18px; border-radius:12px; font-weight:600; font-size:0.85rem; z-index:999; transition:transform 0.4s cubic-bezier(0.23,1,0.32,1); white-space:nowrap; }
+  .toast.show { transform:translateX(-50%) translateY(0); }
+  .spacer { height:90px; }
+  .ai-thinking { display:flex; gap:5px; align-items:center; padding:4px 0; }
+  .ai-thinking span { width:6px; height:6px; border-radius:50%; background:var(--accent); animation:bounce 1.2s ease-in-out infinite; }
+  .ai-thinking span:nth-child(2) { animation-delay:0.2s; background:var(--accent2); }
+  .ai-thinking span:nth-child(3) { animation-delay:0.4s; background:var(--accent3); }
+  @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-8px)} }
+
+  /* ── INSTALL BANNER ── */
+  .install-banner {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%) translateY(140px);
+    width: calc(100% - 32px);
+    max-width: 388px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 18px;
+    padding: 16px 18px;
+    display: none;
+    align-items: center;
+    gap: 14px;
+    z-index: 50;
+    box-shadow: 0 8px 32px rgba(124,92,252,0.4);
+    transition: transform 0.5s cubic-bezier(0.23,1,0.32,1);
+    cursor: pointer;
+  }
+  .install-banner.show { display: flex; transform: translateX(-50%) translateY(0); }
+  .install-banner-icon { font-size: 2rem; flex-shrink: 0; }
+  .install-banner-text { flex: 1; }
+  .install-banner-title { font-family:'Syne',sans-serif; font-weight:700; font-size:0.95rem; color:white; margin-bottom:2px; }
+  .install-banner-sub { font-size:0.75rem; color:rgba(255,255,255,0.8); }
+  .install-banner-btn { background:white; color:var(--accent); border:none; border-radius:10px; padding:8px 14px; font-family:'Syne',sans-serif; font-weight:700; font-size:0.8rem; cursor:pointer; flex-shrink:0; }
+  .install-banner-close { position:absolute; top:10px; right:12px; background:none; border:none; color:rgba(255,255,255,0.7); font-size:1rem; cursor:pointer; }
+
+  /* Install guide modal */
+  .install-guide-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(8px); z-index:300; align-items:flex-end; justify-content:center; }
+  .install-guide-modal.open { display:flex; }
+  .install-guide-sheet { background:var(--surface); border:1px solid var(--border); border-radius:24px 24px 0 0; padding:24px 20px 44px; width:100%; max-width:420px; }
+  .journal-entry { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px 16px; position:relative; animation:slideIn 0.3s cubic-bezier(0.23,1,0.32,1); }
+  .journal-entry-date { font-size:0.7rem; color:var(--accent); font-weight:600; letter-spacing:0.06em; margin-bottom:6px; text-transform:uppercase; }
+  .journal-entry-text { font-size:0.88rem; line-height:1.6; color:var(--text); font-style:italic; }
+  .journal-entry-delete { position:absolute; top:10px; right:12px; background:none; border:none; color:var(--muted); cursor:pointer; font-size:0.85rem; opacity:0.6; }
+  .journal-entry-delete:hover { opacity:1; color:var(--accent2); }
+
+  /* BADGES */
+  .badge-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .badge-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:14px 10px; text-align:center; transition:all 0.3s; position:relative; overflow:hidden; }
+  .badge-card.earned { border-color:rgba(252,208,92,0.4); background:rgba(252,208,92,0.06); }
+  .badge-card.earned::after { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(252,208,92,0.08),transparent); pointer-events:none; }
+  .badge-icon { font-size:2rem; margin-bottom:6px; filter:grayscale(1); opacity:0.3; transition:all 0.3s; }
+  .badge-card.earned .badge-icon { filter:none; opacity:1; }
+  .badge-name { font-family:'Syne',sans-serif; font-size:0.72rem; font-weight:700; color:var(--muted); line-height:1.3; }
+  .badge-card.earned .badge-name { color:var(--text); }
+  .badge-desc { font-size:0.65rem; color:var(--muted); margin-top:3px; line-height:1.3; }
+  .badge-new { position:absolute; top:6px; right:6px; background:var(--accent2); color:white; font-size:0.55rem; font-weight:700; padding:2px 6px; border-radius:99px; font-family:'Syne',sans-serif; }
+  
+  /* Badge unlock animation */
+  @keyframes badgeUnlock { 0%{transform:scale(0.5);opacity:0} 60%{transform:scale(1.2)} 100%{transform:scale(1);opacity:1} }
+  .badge-unlocking { animation: badgeUnlock 0.6s cubic-bezier(0.23,1,0.32,1) forwards; }
+  .install-step { display:flex; align-items:flex-start; gap:14px; padding:14px 0; border-bottom:1px solid var(--border); }
+  .install-step:last-child { border-bottom:none; }
+  .install-step-num { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; font-size:0.85rem; color:white; flex-shrink:0; }
+  .install-step-text { flex:1; }
+  .install-step-title { font-size:0.9rem; font-weight:600; margin-bottom:3px; }
+  .install-step-desc { font-size:0.8rem; color:var(--muted); line-height:1.5; }
+  .install-step-img { font-size:1.8rem; margin-top:2px; }
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- TODAY -->
+<div class="page active" id="page-today">
+  <nav>
+    <div class="logo">HabitFlow</div>
+    <div class="streak-badge"><span class="fire">🔥</span> <span id="streakNum">0</span> day streak</div>
+  </nav>
+  <div class="hero">
+    <div class="greeting" id="greeting">Good morning</div>
+    <h1>Build the life<br><span>you deserve</span></h1>
+    <p class="hero-sub" id="heroSub">Start your first habit today</p>
+  </div>
+  <div class="xp-section">
+    <div class="xp-header">
+      <div class="level-tag" id="levelTag">⚡ Level 1</div>
+      <div style="display:flex;align-items:center;">
+        <div class="xp-text"><strong id="xpCurrent">0</strong> / 500 XP</div>
+        <div class="xp-multiplier" id="xpMultiplier" style="display:none;">2x 🔥</div>
+      </div>
+    </div>
+    <div class="xp-track"><div class="xp-fill" id="xpBar"></div></div>
+  </div>
+  <!-- Beta banner -->
+  <div style="margin:0 20px 14px;max-width:380px;margin-left:auto;margin-right:auto;">
+    <div style="background:rgba(252,208,92,0.08);border:1px solid rgba(252,208,92,0.25);border-radius:14px;padding:11px 14px;display:flex;align-items:center;gap:10px;">
+      <span style="font-size:1.1rem;flex-shrink:0;">🧪</span>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;color:var(--gold);letter-spacing:0.04em;">TEST MODUS</div>
+        <div style="font-size:0.74rem;color:var(--muted);margin-top:1px;line-height:1.4;">De app is in ontwikkeling — er worden regelmatig nieuwe dingen toegevoegd en verbeterd. Bedankt voor het testen! 🙏</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ai-card" onclick="refreshInsight()">
+    <div class="ai-label"><div class="ai-dot"></div> AI Coach</div>
+    <div class="ai-text" id="aiText"><div class="ai-thinking"><span></span><span></span><span></span></div></div>
+    <div class="ai-refresh">↻ Tap for new insight</div>
+  </div>
+  <!-- Countdown timer -->
+  <div class="countdown-bar" id="countdownBar">
+    <span id="countdownEmoji" style="font-size:1.4rem;">⏰</span>
+    <div style="flex:1;">
+      <div class="countdown-time" id="countdownTime">--:--</div>
+      <div class="countdown-label" id="countdownLabel">Nog tijd over vandaag</div>
+    </div>
+    <button onclick="useStreakFreeze()" id="freezeQuickBtn" style="display:none;background:rgba(92,244,252,0.15);border:1px solid rgba(92,244,252,0.3);border-radius:10px;padding:7px 12px;color:var(--accent3);font-size:0.75rem;font-weight:700;font-family:'Syne',sans-serif;cursor:pointer;">🧊 Freeze!</button>
+  </div>
+
+  <!-- Streak freeze bar -->
+  <div class="freeze-bar" id="freezeBar" onclick="useStreakFreeze()" style="display:none;">
+    <div class="freeze-icon">🧊</div>
+    <div class="freeze-info">
+      <div class="freeze-title">Streak Freeze beschikbaar!</div>
+      <div class="freeze-desc">Gebruik hem om je streak te beschermen als je een dag mist</div>
+    </div>
+    <div class="freeze-count" id="freezeCount">x1</div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-title">Today's habits</div>
+    <button class="add-btn" onclick="openModal()">+</button>
+  </div>
+  <div class="habits-list" id="habitsList"></div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num" id="statStreak">0</div><div class="stat-label">Day streak</div></div>
+    <div class="stat-card"><div class="stat-num" id="statTotal">0</div><div class="stat-label">Completions</div></div>
+    <div class="stat-card"><div class="stat-num" id="statRate">—</div><div class="stat-label">Success rate</div></div>
+  </div>
+
+  <!-- Daily missions -->
+  <div class="missions-wrap" id="missionsWrap">
+    <div class="missions-toggle" id="missionsToggle" onclick="toggleMissions()">
+      <div class="missions-toggle-left">🎯 <span>Dagelijkse missies</span></div>
+      <div class="missions-toggle-right">
+        <span class="missions-done-count" id="missionsDoneCount"></span>
+        <span class="missions-arrow">▾</span>
+      </div>
+    </div>
+    <div class="missions-body" id="missionsBody">
+      <div id="missionsList"></div>
+      <button class="missions-skip" onclick="skipMissions()">Niet vandaag — verberg missies</button>
+    </div>
+  </div>
+
+  <div class="spacer"></div>
+</div>
+
+<!-- PROGRESS -->
+<div class="page" id="page-progress">
+  <div class="page-header"><h2>Progress 📊</h2><p>Your week at a glance</p></div>
+  <div class="progress-card">
+    <h3>This week</h3>
+    <div class="week-labels" id="weekDayLabels">
+      <span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span><span>SUN</span>
+    </div>
+    <div class="week-cells" id="weekGrid"></div>
+  </div>
+  <div class="progress-card">
+    <h3>Per habit</h3>
+    <div id="habitProgressList"></div>
+  </div>
+
+  <!-- Dagboek -->
+  <div style="margin:0 20px 12px;max-width:380px;margin-left:auto;margin-right:auto;">
+    <div style="font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">📖 Mijn dagboek</div>
+
+    <!-- Vergrendeld -->
+    <div id="journalLocked" style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px 16px;text-align:center;display:block;">
+      <div style="font-size:2.2rem;margin-bottom:10px;">🔒</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;margin-bottom:6px;">Dagboek vergrendeld</div>
+      <div style="font-size:0.82rem;color:var(--muted);line-height:1.5;">Voltooi minimaal 1 habit vandaag<br>om je dagboek te ontgrendelen!</div>
+      <div style="margin-top:14px;padding:10px 16px;background:rgba(124,92,252,0.08);border-radius:10px;border:1px solid rgba(124,92,252,0.15);">
+        <div style="font-size:0.78rem;color:var(--accent);font-weight:500;">💡 Ga naar Today en vink een habit aan</div>
+      </div>
+    </div>
+
+    <!-- Ontgrendeld -->
+    <div id="journalUnlocked" style="display:none;">
+      <div style="background:linear-gradient(135deg,rgba(92,252,160,0.08),rgba(124,92,252,0.08));border:1px solid rgba(92,252,160,0.2);border-radius:12px;padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:8px;">
+        <span style="font-size:1.1rem;">🏆</span>
+        <span style="font-size:0.8rem;color:var(--success);font-weight:500);">Dagboek ontgrendeld — goed bezig vandaag!</span>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;">
+        <p style="font-size:0.78rem;color:var(--muted);margin-bottom:10px;">Schrijf een quote, gedachte of motivatie voor vandaag</p>
+        <textarea id="journalInput" placeholder="Vandaag voel ik me... / Mijn quote van de dag is..."
+          style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;outline:none;resize:none;height:80px;line-height:1.5;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='var(--accent)'"
+          onblur="this.style.borderColor='var(--border)'"></textarea>
+        <button onclick="saveJournalEntry()" style="width:100%;padding:12px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;cursor:pointer;margin-top:10px;">Opslaan ✨</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vorige entries -->
+  <div style="margin:0 20px 12px;max-width:380px;margin-left:auto;margin-right:auto;">
+    <div style="font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Eerdere notities</div>
+    <div id="journalList" style="display:flex;flex-direction:column;gap:10px;"></div>
+  </div>
+
+  <div class="spacer"></div>
+</div>
+
+<!-- AI COACH -->
+<div class="page" id="page-coach">
+  <div class="coach-intro">
+    <div class="coach-avatar">🤖</div>
+    <h2>AI Coach</h2>
+    <p id="coachIntroText">Stel me een vraag over jouw habits — ik geef persoonlijk advies.</p>
+  </div>
+
+  <!-- Habit tips gebaseerd op jouw habits -->
+  <div id="habitTipsSection" style="margin:0 20px 14px;max-width:380px;margin-left:auto;margin-right:auto;display:none;">
+    <div style="font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Jouw persoonlijke tips</div>
+    <div id="habitTipsList" style="display:flex;flex-direction:column;gap:8px;"></div>
+  </div>
+
+  <!-- Chat -->
+  <div style="margin:0 20px;max-width:380px;margin-left:auto;margin-right:auto;">
+    <div id="chatMessages" style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px;min-height:40px;"></div>
+    <div style="display:flex;gap:8px;align-items:flex-end;">
+      <input type="text" id="chatInput" placeholder="Vraag iets aan je AI coach..." 
+        style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:13px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;transition:border-color 0.2s;"
+        onkeydown="if(event.key==='Enter')sendChat()"
+        onfocus="this.style.borderColor='var(--accent)'"
+        onblur="this.style.borderColor='var(--border)'">
+      <button onclick="sendChat()" id="sendBtn"
+        style="width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:white;font-size:1.2rem;cursor:pointer;flex-shrink:0;transition:all 0.2s;">
+        ↑
+      </button>
+    </div>
+    <!-- Snelle vragen -->
+    <div style="margin-top:10px;">
+      <div style="font-size:0.7rem;color:var(--muted);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:7px;">Coaching</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+        <button onclick="quickAsk('Hoe kan ik mijn habits verbeteren?')" class="quick-btn">💡 Verbeter mijn habits</button>
+        <button onclick="quickAsk('Welke habit moet ik als eerste doen vandaag?')" class="quick-btn">📋 Wat eerst vandaag?</button>
+        <button onclick="quickAsk('Geef me motivatie!')" class="quick-btn">🔥 Motiveer me!</button>
+        <button onclick="quickAsk('Waarom mis ik zo vaak mijn habits?')" class="quick-btn">❓ Waarom mis ik habits?</button>
+      </div>
+      <div style="font-size:0.7rem;color:var(--muted);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:7px;">Over de app</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        <button onclick="quickAsk('Hoe werkt XP en levels?')" class="quick-btn">⚡ Hoe werkt XP?</button>
+        <button onclick="quickAsk('Wat is een streak freeze?')" class="quick-btn">🧊 Streak freeze?</button>
+        <button onclick="quickAsk('Hoe werken badges?')" class="quick-btn">🏆 Hoe werken badges?</button>
+        <button onclick="quickAsk('Wat zijn dagelijkse missies?')" class="quick-btn">🎯 Dagelijkse missies?</button>
+        <button onclick="quickAsk('Hoe stel ik een reminder in?')" class="quick-btn">🔔 Reminders instellen?</button>
+        <button onclick="quickAsk('Hoe verander ik het thema?')" class="quick-btn">🎨 Thema veranderen?</button>
+        <button onclick="quickAsk('Hoe installeer ik de app?')" class="quick-btn">📱 App installeren?</button>
+        <button onclick="quickAsk('Hoe werkt foto en timer bewijs?')" class="quick-btn">📸 Foto & timer bewijs?</button>
+      </div>
+    </div>
+  </div>
+  <div class="spacer"></div>
+</div>
+
+<!-- PROFILE -->
+<div class="page" id="page-profile">
+  <div class="profile-top">
+    <div class="avatar" id="avatarDisplay" onclick="document.getElementById('photoInput').click()" style="cursor:pointer;position:relative;overflow:hidden;">
+      <span id="avatarEmoji">😊</span>
+      <img id="avatarImg" src="" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:50%;">
+      <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.4);font-size:0.6rem;padding:3px 0;text-align:center;">📷</div>
+    </div>
+    <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhoto(event)">
+    <div style="display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:4px;">
+      <div class="profile-name" id="profileNameDisplay">Jouw naam</div>
+      <button onclick="editName()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.9rem;">✏️</button>
+    </div>
+    <div class="profile-sub" id="profileSub">Level 1 · Just getting started</div>
+  </div>
+  <div class="profile-stats">
+    <div class="ps-card"><div class="ps-num" id="psStreak">0</div><div class="ps-label">Streak</div></div>
+    <div class="ps-card"><div class="ps-num" id="psTotal">0</div><div class="ps-label">Total done</div></div>
+    <div class="ps-card"><div class="ps-num" id="psHabits">0</div><div class="ps-label">Habits</div></div>
+  </div>
+  <!-- Badges inklapbaar -->
+  <div style="margin:0 20px 16px;max-width:380px;margin-left:auto;margin-right:auto;">
+    <div class="settings-list" style="margin:0;">
+      <div class="settings-item" onclick="toggleBadges()" id="badgesToggleRow">
+        <div class="settings-icon">🏆</div>
+        <div class="settings-label">Achievements</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span id="badgeCountLabel" style="font-size:0.75rem;color:var(--accent);">0/15</span>
+          <span id="badgesArrow" style="color:var(--muted);transition:transform 0.2s;display:inline-block;">▾</span>
+        </div>
+      </div>
+    </div>
+    <div id="badgesPanel" style="display:none;background:var(--surface);border:1px solid var(--border);border-top:none;border-radius:0 0 16px 16px;padding:14px;">
+      <div class="badge-grid" id="badgeGrid"></div>
+    </div>
+  </div>
+
+  <div class="settings-list">
+    <div class="settings-item" onclick="openReminderModal()"><div class="settings-icon">🔔</div><div class="settings-label">Reminders</div><div id="reminderStatus" class="settings-arrow" style="font-size:0.75rem;color:var(--accent);">Uit</div></div>
+    <div class="settings-item" onclick="openThemeModal()"><div class="settings-icon">🎨</div><div class="settings-label">App thema</div><div id="themeStatus" class="settings-arrow" style="font-size:0.75rem;color:var(--accent);">Donker</div></div>
+    <div class="settings-item" onclick="showToast('📤 Export coming soon!')"><div class="settings-icon">📤</div><div class="settings-label">Export data</div><div class="settings-arrow">›</div></div>
+    <div class="settings-item" onclick="if(confirm('Alle data resetten?')){resetAll()}"><div class="settings-icon">🗑️</div><div class="settings-label">Reset all data</div><div class="settings-arrow">›</div></div>
+  </div>
+  <div class="spacer"></div>
+</div>
+
+<!-- THEME MODAL -->
+<div class="theme-modal" id="themeModal" onclick="closeThemeModal(event)">
+  <div class="theme-sheet">
+    <div class="theme-handle"></div>
+    <h2 style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:4px;">App thema 🎨</h2>
+    <p style="font-size:0.83rem;color:var(--muted);margin-bottom:4px;">Kies jouw stijl</p>
+    <div class="theme-grid">
+      <button class="theme-btn active" id="theme-btn-dark" onclick="setTheme('dark')">
+        <div class="theme-preview" style="background:linear-gradient(135deg,#0a0a0f,#1a1a24);border:1px solid rgba(124,92,252,0.3);"></div>
+        <div class="theme-name">🌙 Donker</div>
+        <div class="theme-desc">Standaard nacht thema</div>
+      </button>
+      <button class="theme-btn" id="theme-btn-light" onclick="setTheme('light')">
+        <div class="theme-preview" style="background:linear-gradient(135deg,#f4f4f8,#ffffff);border:1px solid rgba(0,0,0,0.1);"></div>
+        <div class="theme-name">☀️ Licht</div>
+        <div class="theme-desc">Helder dagthema</div>
+      </button>
+      <button class="theme-btn" id="theme-btn-sunset" onclick="setTheme('sunset')">
+        <div class="theme-preview" style="background:linear-gradient(135deg,#1a0a00,#ff7c2a);"></div>
+        <div class="theme-name">🌅 Zonsondergang</div>
+        <div class="theme-desc">Warm oranje gevoel</div>
+      </button>
+      <button class="theme-btn" id="theme-btn-champion" onclick="setTheme('champion')">
+        <div class="theme-preview" style="background:linear-gradient(135deg,#000d1a,#00c8ff);"></div>
+        <div class="theme-name">🏆 Kampioen</div>
+        <div class="theme-desc">Blauw & goud power</div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- REMINDER MODAL -->
+<div class="reminder-modal" id="reminderModal" onclick="closeReminderModal(event)">
+  <div class="reminder-sheet">
+    <div class="theme-handle"></div>
+    <h2 style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:4px;">Reminders 🔔</h2>
+    <p style="font-size:0.83rem;color:var(--muted);">Kies wanneer je een herinnering wil krijgen</p>
+    <div class="time-grid" id="timeGrid">
+      <button class="time-btn" onclick="toggleReminder('07:00')">🌅 07:00</button>
+      <button class="time-btn" onclick="toggleReminder('08:00')">☀️ 08:00</button>
+      <button class="time-btn" onclick="toggleReminder('09:00')">🕘 09:00</button>
+      <button class="time-btn" onclick="toggleReminder('12:00')">🌞 12:00</button>
+      <button class="time-btn" onclick="toggleReminder('18:00')">🌆 18:00</button>
+      <button class="time-btn" onclick="toggleReminder('20:00')">🌙 20:00</button>
+      <button class="time-btn" onclick="toggleReminder('21:00')">⭐ 21:00</button>
+      <button class="time-btn" onclick="toggleReminder('22:00')">🌛 22:00</button>
+    </div>
+    <p id="reminderNote" style="font-size:0.78rem;color:var(--muted);text-align:center;margin-top:8px;">Selecteer een tijd voor je dagelijkse herinnering</p>
+    <button onclick="saveReminder()" style="width:100%;padding:14px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;margin-top:12px;">Opslaan</button>
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="delete-modal" id="deleteModal">
+  <div class="delete-sheet">
+    <div class="delete-icon" id="deleteModalIcon">🗑️</div>
+    <div class="delete-title" id="deleteModalTitle">Habit verwijderen?</div>
+    <div class="delete-desc" id="deleteModalDesc">Weet je zeker dat je deze habit wil verwijderen? Dit kan niet ongedaan worden gemaakt.</div>
+    <div class="delete-streak" id="deleteModalStreak" style="display:none;"></div>
+    <div class="delete-btns">
+      <button class="delete-cancel" onclick="closeDeleteModal()">Annuleren</button>
+      <button class="delete-confirm" id="deleteConfirmBtn">Verwijderen</button>
+    </div>
+  </div>
+</div>
+
+<!-- INSTALL GUIDE MODAL -->
+<div class="install-guide-modal" id="installGuideModal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="install-guide-sheet">
+    <div style="width:40px;height:4px;border-radius:99px;background:var(--border);margin:0 auto 20px;"></div>
+    <h2 style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:4px;">📱 App installeren</h2>
+    <p style="font-size:0.83rem;color:var(--muted);margin-bottom:16px;">Volg deze stappen om HabitFlow op je startscherm te zetten</p>
+
+    <!-- iOS stappen -->
+    <div id="installStepsIOS">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:10px 12px;background:rgba(124,92,252,0.08);border-radius:10px;border:1px solid rgba(124,92,252,0.15);">
+        <span style="font-size:1.1rem;"></span>
+        <span style="font-size:0.8rem;color:var(--accent);font-weight:500;">Open deze pagina in Safari voor de beste ervaring</span>
+      </div>
+      <div class="install-step">
+        <div class="install-step-num">1</div>
+        <div class="install-step-text">
+          <div class="install-step-title">Tik op het deel-icoontje</div>
+          <div class="install-step-desc">Onderaan Safari zie je een vierkantje met een pijltje omhoog ↑ — tik daarop</div>
+        </div>
+        <div class="install-step-img">⬆️</div>
+      </div>
+      <div class="install-step">
+        <div class="install-step-num">2</div>
+        <div class="install-step-text">
+          <div class="install-step-title">Scroll naar beneden</div>
+          <div class="install-step-desc">Scroll in het menu omlaag totdat je "Zet op beginscherm" ziet staan</div>
+        </div>
+        <div class="install-step-img">👇</div>
+      </div>
+      <div class="install-step">
+        <div class="install-step-num">3</div>
+        <div class="install-step-text">
+          <div class="install-step-title">Tik op "Zet op beginscherm"</div>
+          <div class="install-step-desc">Tik daarna op "Voeg toe" rechtsboven — klaar! 🎉</div>
+        </div>
+        <div class="install-step-img">✅</div>
+      </div>
+    </div>
+
+    <!-- Android stappen -->
+    <div id="installStepsAndroid">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:10px 12px;background:rgba(124,92,252,0.08);border-radius:10px;border:1px solid rgba(124,92,252,0.15);">
+        <span style="font-size:1.1rem;">🌐</span>
+        <span style="font-size:0.8rem;color:var(--accent);font-weight:500;">Open deze pagina in Chrome voor de beste ervaring</span>
+      </div>
+      <div class="install-step">
+        <div class="install-step-num">1</div>
+        <div class="install-step-text">
+          <div class="install-step-title">Tik op de drie puntjes</div>
+          <div class="install-step-desc">Rechtsboven in Chrome zie je drie puntjes ⋮ — tik daarop</div>
+        </div>
+        <div class="install-step-img">⋮</div>
+      </div>
+      <div class="install-step">
+        <div class="install-step-num">2</div>
+        <div class="install-step-text">
+          <div class="install-step-title">Tik op "Toevoegen aan startscherm"</div>
+          <div class="install-step-desc">Of "App installeren" als je dat ziet staan — beide werken!</div>
+        </div>
+        <div class="install-step-img">➕</div>
+      </div>
+      <div class="install-step">
+        <div class="install-step-num">3</div>
+        <div class="install-step-text">
+          <div class="install-step-title">Tik op "Toevoegen"</div>
+          <div class="install-step-desc">HabitFlow verschijnt nu tussen je andere apps. Klaar! 🎉</div>
+        </div>
+        <div class="install-step-img">✅</div>
+      </div>
+    </div>
+
+    <button onclick="document.getElementById('installGuideModal').classList.remove('open')" style="width:100%;padding:14px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:white;font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;margin-top:16px;">Begrepen!</button>
+  </div>
+</div>
+
+<!-- INSTALL BANNER -->
+<div class="install-banner" id="installBanner" onclick="triggerInstall()">
+  <div class="install-banner-icon">📱</div>
+  <div class="install-banner-text">
+    <div class="install-banner-title">Installeer HabitFlow</div>
+    <div class="install-banner-sub">Voeg toe aan je startscherm voor de beste ervaring</div>
+  </div>
+  <button class="install-banner-btn">Installeer</button>
+  <button class="install-banner-close" onclick="dismissInstall(event)">✕</button>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="nav-item active" id="nav-today" onclick="goTo('today','nav-today')">
+    <div class="nav-icon">🏠</div><div class="nav-label">Today</div>
+  </div>
+  <div class="nav-item" id="nav-progress" onclick="goTo('progress','nav-progress')">
+    <div class="nav-icon">📊</div><div class="nav-label">Progress</div>
+  </div>
+  <div class="nav-item" id="nav-coach" onclick="goTo('coach','nav-coach')">
+    <div class="nav-icon">🤖</div><div class="nav-label">AI Coach</div>
+  </div>
+  <div class="nav-item" id="nav-profile" onclick="goTo('profile','nav-profile')">
+    <div class="nav-icon">👤</div><div class="nav-label">Profile</div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2>New Habit ✨</h2>
+    <div class="emoji-grid" id="emojiGrid"></div>
+    <div class="input-group">
+      <label>Habit name</label>
+      <input type="text" id="habitNameInput" placeholder="e.g. Meditate for 10 minutes">
+    </div>
+    <div class="input-group">
+      <label>Best time</label>
+      <select id="habitTime">
+        <option value="Morning">🌅 Morning</option>
+        <option value="Afternoon">☀️ Afternoon</option>
+        <option value="Evening">🌙 Evening</option>
+        <option value="Anytime">⏰ Anytime</option>
+      </select>
+    </div>
+    <div class="input-group">
+      <label>🔔 Dagelijkse reminder (optioneel)</label>
+      <input type="time" id="habitReminder" style="color-scheme:dark;">
+    </div>
+    <div class="input-group">
+      <label>✅ Bewijs bij voltooien (optioneel)</label>
+      <div class="proof-opts">
+        <button type="button" class="proof-opt active" id="proof-none" onclick="selectProof('none')">🚫 Geen</button>
+        <button type="button" class="proof-opt" id="proof-photo" onclick="selectProof('photo')">📸 Foto</button>
+        <button type="button" class="proof-opt" id="proof-timer" onclick="selectProof('timer')">⏱️ Timer</button>
+      </div>
+      <div id="timerMinutesGroup" style="display:none;margin-top:10px;">
+        <input type="number" id="timerMinutes" min="1" max="180" value="10"
+          style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:11px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.93rem;outline:none;">
+        <div style="font-size:0.72rem;color:var(--muted);margin-top:4px;">Aantal minuten voor de timer</div>
+      </div>
+    </div>
+    <button class="create-btn" onclick="addHabit()">Habit aanmaken</button>
+  </div>
+</div>
+
+<script>
+const EMOJIS = ['🧘','🏃','💪','📚','💧','🥗','😴','🎯','🧠','✍️','🎨','🎸','🌿','🧹','💊','☕','🚴','🏊','🙏','💻'];
+const COLORS = ['rgba(124,92,252,0.15)','rgba(252,92,125,0.15)','rgba(92,244,252,0.15)','rgba(252,208,92,0.15)','rgba(92,252,160,0.15)','rgba(252,160,92,0.15)'];
+const INSIGHTS = [
+  "Every expert was once a beginner. <span class='highlight'>The only way to fail is to stop trying.</span>",
+  "Consistency beats perfection. <span class='highlight'>1% better every day</span> equals 37× better after one year.",
+  "The best habit is the one you actually do. <span class='highlight'>Start smaller than you think</span> — then grow.",
+  "It takes on average <span class='highlight'>66 days</span> to form a habit. Be patient — you're rewiring your brain.",
+  "Habit stacking works. Attach a new habit to something you <span class='highlight'>already do every day.</span>",
+  "Your environment shapes your behavior. <span class='highlight'>Design your space</span> to make good habits easier.",
+  "You don't rise to the level of your goals. <span class='highlight'>You fall to the level of your systems.</span>",
+  "Small habits don't add up — <span class='highlight'>they compound.</span> Give them time.",
+  "The hardest part is showing up. <span class='highlight'>Once you start, momentum does the rest.</span>",
+  "Never miss twice. <span class='highlight'>One missed day is an accident. Two is a new habit.</span>",
+  "Success is the product of <span class='highlight'>daily habits,</span> not once-in-a-lifetime transformations.",
+  "You are what you repeatedly do. <span class='highlight'>Excellence is a habit, not an act.</span>",
+  "Motivation gets you started. <span class='highlight'>Habit keeps you going.</span>",
+  "The secret to getting ahead is <span class='highlight'>getting started.</span> Even just 2 minutes counts.",
+  "Forget how you feel. <span class='highlight'>Focus on what you do.</span> Feelings follow actions.",
+  "A year from now you'll wish <span class='highlight'>you had started today.</span>",
+  "You don't have to be great to start. <span class='highlight'>But you have to start to be great.</span>",
+  "Your future self is watching you <span class='highlight'>through your memories.</span> Make them proud.",
+  "The difference between who you are and who you want to be <span class='highlight'>is what you do daily.</span>",
+  "Progress, not perfection. <span class='highlight'>Every checkmark counts.</span>",
+  "Discipline is choosing between <span class='highlight'>what you want now</span> and what you want most.",
+  "Champions don't do extraordinary things. <span class='highlight'>They do ordinary things without thinking about it.</span>",
+  "Your habits are votes for <span class='highlight'>the person you want to become.</span>",
+  "An hour from now you'll be glad <span class='highlight'>you didn't skip today.</span>",
+  "The pain of discipline is less than <span class='highlight'>the pain of regret.</span>",
+];
+
+// Verander quote elke keer bij opstarten en daarna elk uur
+let currentInsightIndex = Math.floor(Math.random() * INSIGHTS.length);
+setInterval(() => {
+  currentInsightIndex = (currentInsightIndex + 1) % INSIGHTS.length;
+  const el = document.getElementById('aiText');
+  if (el && !el.querySelector('.ai-thinking')) {
+    el.style.opacity = '0';
+    setTimeout(() => {
+      el.innerHTML = INSIGHTS[currentInsightIndex];
+      el.style.opacity = '1';
+    }, 400);
+  }
+}, 60 * 60 * 1000); // elk uur
+
+let habits = [];
+let xp = 0;
+let level = 1;
+let totalDone = 0;
+let selectedEmoji = '🧘';
+let insightIdx = 0;
+let profile = { name: '', photo: null };
+
+function todayStr() {
+  const d = new Date();
+  return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+}
+
+function saveData() {
+  try {
+    const data = {
+      habits, xp, level, totalDone, profile,
+      savedAt: new Date().toISOString()
+    };
+    localStorage.setItem('hf_habits', JSON.stringify(habits));
+    localStorage.setItem('hf_xp', String(xp));
+    localStorage.setItem('hf_level', String(level));
+    localStorage.setItem('hf_totalDone', String(totalDone));
+    localStorage.setItem('hf_profile', JSON.stringify(profile));
+    localStorage.setItem('hf_lastDate', todayStr());
+    localStorage.setItem('hf_backup', JSON.stringify(data));
+  } catch(e) { console.error('Opslaan mislukt:', e); }
+}
+
+function loadData() {
+  try {
+    const h = localStorage.getItem('hf_habits');
+    if (h) habits = JSON.parse(h);
+    xp = parseInt(localStorage.getItem('hf_xp')) || 0;
+    level = parseInt(localStorage.getItem('hf_level')) || 1;
+    totalDone = parseInt(localStorage.getItem('hf_totalDone')) || 0;
+    const p = localStorage.getItem('hf_profile');
+    if (p) profile = JSON.parse(p);
+
+    // Herstel vanuit backup indien nodig
+    if (habits.length === 0) {
+      const backup = localStorage.getItem('hf_backup');
+      if (backup) {
+        const b = JSON.parse(backup);
+        if (b.habits && b.habits.length > 0) {
+          habits = b.habits;
+          xp = b.xp || 0;
+          level = b.level || 1;
+          totalDone = b.totalDone || 0;
+          profile = b.profile || { name: '', photo: null };
+        }
+      }
+    }
+
+    // ── DAGELIJKSE RESET ──
+    const lastDate = localStorage.getItem('hf_lastDate');
+    const today = todayStr();
+
+    if (lastDate && lastDate !== today) {
+      // Nieuwe dag! Verwerk vorige dag eerst
+      const jsDay = new Date().getDay();
+      const todayIdx = jsDay === 0 ? 6 : jsDay - 1; // ma=0 ... zo=6
+      // Gisteren index
+      const yesterdayIdx = todayIdx === 0 ? 6 : todayIdx - 1;
+
+      habits = habits.map(h => {
+        // Sla gisteren op in de dots rij
+        const newDays = [...h.days];
+        newDays[yesterdayIdx] = h.done ? 1 : 0;
+
+        // Als vandaag maandag is (idx=0) reset de hele week
+        if (todayIdx === 0) {
+          const freshDays = [0,0,0,0,0,0,0];
+          return { ...h, done: false, days: freshDays, streak: h.done ? h.streak : Math.max(0, h.streak - 1) };
+        }
+
+        // Reset vandaag's vinkje maar bewaar streak als gisteren gedaan
+        return {
+          ...h,
+          done: false,
+          days: newDays,
+          streak: h.done ? h.streak : 0
+        };
+      });
+      saveData();
+    } else if (!lastDate) {
+      // Eerste keer app openen
+      saveData();
+    }
+  } catch(e) { console.error('Laden mislukt:', e); }
+}
+
+function goTo(page, navId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.getElementById(navId).classList.add('active');
+  if (page === 'progress') renderProgress();
+  if (page === 'profile') { renderProfile(); }
+  if (page === 'coach') initCoach();
+}
+
+function setGreeting() {
+  const h = new Date().getHours();
+  document.getElementById('greeting').textContent = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+}
+
+function render() {
+  const list = document.getElementById('habitsList');
+  const done = habits.filter(h => h.done).length;
+  const streak = calcStreak();
+  document.getElementById('streakNum').textContent = streak;
+  document.getElementById('heroSub').textContent = habits.length === 0
+    ? 'Start your first habit today'
+    : habits.length + ' habit' + (habits.length > 1 ? 's' : '') + ' · ' + done + ' done today';
+
+  if (habits.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">🌱</div><p>No habits yet.<br>Add your first one to get started!</p><button onclick="openModal()">+ Add habit</button></div>`;
+  } else {
+    list.innerHTML = '';
+    habits.forEach((h, i) => {
+      const card = document.createElement('div');
+      card.className = 'habit-card' + (h.done ? ' done' : '');
+      card.style.animationDelay = (i * 0.06) + 's';
+      card.innerHTML = `
+        <div class="habit-icon" style="background:${COLORS[i%COLORS.length]}">${h.icon}</div>
+        <div class="habit-info">
+          <div class="habit-name">${h.name}</div>
+          <div class="habit-meta">
+            <span class="habit-streak">🔥 ${h.streak}d</span>
+            <span class="habit-time">${h.time}</span>
+            ${h.reminder ? `<span style="font-size:0.7rem;color:var(--accent3);">🔔 ${h.reminder}</span>` : ''}
+            ${h.proofType === 'photo' ? `<span style="font-size:0.7rem;color:var(--accent2);">📸 foto</span>` : ''}
+            ${h.proofType === 'timer' ? `<span style="font-size:0.7rem;color:var(--accent2);">⏱️ ${h.timerMins}min</span>` : ''}
+          </div>
+          <div class="dots-row">${h.days.map((d,di)=>{const jsDay=new Date().getDay();const tIdx=jsDay===0?6:jsDay-1;return`<div class="dot ${d?'filled':''}${di===tIdx?' today-dot':''}${di===tIdx&&d?' today filled':''}"></div>`}).join('')}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:center;">
+          <button class="check-btn" onclick="toggleHabit(${h.id},event)">${h.done?'✓':''}</button>
+          <button onclick="deleteHabit(${h.id},event)" style="width:28px;height:28px;border-radius:8px;background:none;border:1px solid var(--border);color:var(--muted);font-size:0.75rem;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.borderColor='var(--accent2)';this.style.color='var(--accent2)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">🗑️</button>
+        </div>`;
+      list.appendChild(card);
+    });
+  }
+  updateStats();
+}
+
+function completeHabitById(id) {
+  const h = habits.find(x => x.id === id);
+  if (!h) return;
+  const today = todayStr();
+  h.done = true;
+  h.days[6] = 1;
+  totalDone++;
+  if (h.lastStreakDate !== today) { h.streak++; h.lastStreakDate = today; }
+  gainXP(20);
+  showToast('✨ ' + h.name + ' gedaan! +20 XP');
+  render(); saveData(); checkBadges();
+  if (document.getElementById('journalLocked')) renderJournal();
+}
+
+function toggleHabit(id, e) {
+  e.stopPropagation();
+  const h = habits.find(x => x.id === id);
+  const today = todayStr();
+  if (!h.done) {
+    if (h.proofType) { openProofModal(id); return; }
+    h.done = true;
+    h.days[6] = 1;
+    totalDone++;
+    // Streak alleen +1 als hij vandaag nog niet verhoogd is
+    if (h.lastStreakDate !== today) {
+      h.streak++;
+      h.lastStreakDate = today;
+    }
+    gainXP(20);
+    showToast('✨ ' + h.name + ' gedaan! +20 XP');
+  } else {
+    h.done = false;
+    h.days[6] = 0;
+    totalDone = Math.max(0, totalDone - 1);
+    xp = Math.max(0, xp - 20);
+    updateXP();
+    // lastStreakDate blijft staan zodat streak niet weer omhoog kan vandaag
+  }
+  render();
+  saveData();
+  checkBadges();
+  if (document.getElementById('journalLocked')) renderJournal();
+}
+
+function calcStreak() {
+  if (habits.length === 0) return 0;
+  const allDone = habits.every(h => h.done);
+  if (!allDone) return 0;
+  return Math.max(...habits.map(h => h.streak));
+}
+
+function bestStreak() {
+  // Hoogste individuele streak — voor reminders
+  if (habits.length === 0) return 0;
+  return Math.max(...habits.map(h => h.streak));
+}
+
+function updateStats() {
+  updateFreezeUI();
+  updateMultiplierUI();
+  renderMissions();
+  checkMissions();
+  const streak = calcStreak();
+  document.getElementById('statStreak').textContent = streak;
+  document.getElementById('statTotal').textContent = totalDone;
+  const possible = habits.length * 7;
+  const done = habits.reduce((a, h) => a + h.days.filter(Boolean).length, 0);
+  document.getElementById('statRate').textContent = possible > 0 ? Math.round(done/possible*100) + '%' : '—';
+}
+
+function gainXP(n) {
+  const mult = getXPMultiplier();
+  const earned = n * mult;
+  xp += earned;
+  if (mult > 1) showToast('✨ +' + earned + ' XP (' + mult + 'x multiplier!) 🔥');
+  if (xp >= 500) {
+    xp -= 500; level++;
+    showToast('🎉 Level Up! Je bent nu Level ' + level + '!');
+    // Elke 5 levels een streak freeze verdienen
+    if (level % 5 === 0) setTimeout(earnFreeze, 1500);
+  }
+  updateXP();
+  updateMultiplierUI();
+}
+
+function updateXP() {
+  document.getElementById('xpCurrent').textContent = xp;
+  document.getElementById('xpBar').style.width = (xp/500*100) + '%';
+  document.getElementById('levelTag').textContent = '⚡ Level ' + level;
+}
+
+function renderProgress() {
+  const jsDay = new Date().getDay();
+  const todayIdx = jsDay === 0 ? 6 : jsDay - 1; // ma=0 ... zo=6
+
+  const DAY_LABELS = ['MA','DI','WO','DO','VR','ZA','ZO'];
+  const labelEls = document.querySelectorAll('#weekDayLabels span');
+  labelEls.forEach((el, i) => {
+    el.textContent = DAY_LABELS[i];
+    el.style.color = i === todayIdx ? 'var(--accent3)' : '';
+    el.style.fontWeight = i === todayIdx ? '800' : '';
+  });
+
+  const grid = document.getElementById('weekGrid');
+  grid.innerHTML = '';
+  for (let i = 0; i < 7; i++) {
+    const isToday = i === todayIdx;
+    const isFuture = i > todayIdx;
+    const total = habits.length;
+
+    // Voor vandaag: tel habits die nu aangevinkt zijn
+    // Voor andere dagen: gebruik de days array
+    let doneN;
+    if (isToday) {
+      doneN = habits.filter(h => h.done).length;
+    } else {
+      doneN = habits.filter(h => h.days[i]).length;
+    }
+
+    const cell = document.createElement('div');
+    cell.className = 'week-cell'
+      + (isToday ? ' today-cell' : '')
+      + (!isFuture && total > 0 && doneN === total ? ' full' : '')
+      + (!isFuture && doneN > 0 && doneN < total ? ' partial' : '');
+    if (isFuture) {
+      cell.textContent = '·';
+      cell.style.opacity = '0.3';
+    } else {
+      cell.textContent = total === 0 ? '—' : doneN === total && total > 0 ? '✓' : doneN > 0 ? String(doneN) : '·';
+    }
+    grid.appendChild(cell);
+  }
+
+  const pList = document.getElementById('habitProgressList');
+  if (habits.length === 0) {
+    pList.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;text-align:center;padding:16px 0;">Nog geen habits — voeg ze toe op de Today tab!</p>';
+    return;
+  }
+
+  // Voor percentage: tel vandaag apart mee
+  pList.innerHTML = habits.map(h => {
+    const daysCompleted = h.days.slice(0, todayIdx).filter(Boolean).length + (h.done ? 1 : 0);
+    const daysTotal = todayIdx + 1;
+    const pct = Math.round(daysCompleted / daysTotal * 100);
+    return `<div class="habit-progress-item"><div class="hp-header"><span class="hp-name">${h.icon} ${h.name}</span><span class="hp-pct">${pct}%</span></div><div class="hp-bar"><div class="hp-fill" style="width:${pct}%"></div></div></div>`;
+  }).join('');
+
+  renderJournal();
+}
+
+function loadInsight() {
+  const el = document.getElementById('aiText');
+  el.innerHTML = '<div class="ai-thinking"><span></span><span></span><span></span></div>';
+  setTimeout(() => {
+    el.style.transition = 'opacity 0.4s';
+    el.innerHTML = INSIGHTS[currentInsightIndex];
+  }, 1000);
+}
+function refreshInsight() {
+  currentInsightIndex = (currentInsightIndex + 1) % INSIGHTS.length;
+  const el = document.getElementById('aiText');
+  el.style.opacity = '0';
+  setTimeout(() => {
+    el.innerHTML = INSIGHTS[currentInsightIndex];
+    el.style.opacity = '1';
+  }, 300);
+}
+
+function openModal() { document.getElementById('modalOverlay').classList.add('open'); }
+function closeModal(e) { if (e.target === document.getElementById('modalOverlay')) document.getElementById('modalOverlay').classList.remove('open'); }
+
+function addHabit() {
+  const name = document.getElementById('habitNameInput').value.trim();
+  if (!name) { document.getElementById('habitNameInput').focus(); return; }
+  const time = document.getElementById('habitTime').value;
+  const reminder = document.getElementById('habitReminder').value || null;
+  const proofType = selectedProof !== 'none' ? selectedProof : null;
+  const timerMins = proofType === 'timer' ? (parseInt(document.getElementById('timerMinutes').value) || 10) : null;
+  habits.push({ id: Date.now(), icon: selectedEmoji, name, time, reminder, proofType, timerMins, streak: 0, done: false, days: [0,0,0,0,0,0,0] });
+  document.getElementById('habitNameInput').value = '';
+  document.getElementById('habitReminder').value = '';
+  selectedProof = 'none';
+  document.querySelectorAll('.proof-opt').forEach(b => b.classList.remove('active'));
+  document.getElementById('proof-none').classList.add('active');
+  document.getElementById('timerMinutesGroup').style.display = 'none';
+  document.getElementById('modalOverlay').classList.remove('open');
+  render();
+  saveData();
+  checkBadges();
+  scheduleHabitReminders();
+  showToast('🎯 ' + name + ' toegevoegd!');
+}
+
+function renderProfile() {
+  document.getElementById('psStreak').textContent = calcStreak();
+  document.getElementById('psTotal').textContent = totalDone;
+  document.getElementById('psHabits').textContent = habits.length;
+  document.getElementById('profileSub').textContent = 'Level ' + level + ' · ' + (totalDone === 0 ? 'Just getting started' : totalDone + ' habits completed');
+  document.getElementById('profileNameDisplay').textContent = profile.name || 'Jouw naam';
+  if (profile.photo) {
+    document.getElementById('avatarImg').src = profile.photo;
+    document.getElementById('avatarImg').style.display = 'block';
+    document.getElementById('avatarEmoji').style.display = 'none';
+  } else {
+    document.getElementById('avatarImg').style.display = 'none';
+    document.getElementById('avatarEmoji').style.display = 'block';
+  }
+}
+
+function editName() {
+  const name = prompt('Wat is je naam?', profile.name || '');
+  if (name !== null && name.trim() !== '') {
+    profile.name = name.trim();
+    document.getElementById('profileNameDisplay').textContent = profile.name;
+    saveData();
+    showToast('✅ Naam opgeslagen!');
+  }
+}
+
+function handlePhoto(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    profile.photo = e.target.result;
+    document.getElementById('avatarImg').src = profile.photo;
+    document.getElementById('avatarImg').style.display = 'block';
+    document.getElementById('avatarEmoji').style.display = 'none';
+    saveData();
+    showToast('📸 Profielfoto opgeslagen!');
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── AI COACH CHAT ──
+let chatHistory = [];
+let isTyping = false;
+
+let coachInitialized = false;
+
+function initCoach() {
+  // Toon persoonlijke habit tips (altijd updaten)
+  if (habits.length > 0) {
+    const section = document.getElementById('habitTipsSection');
+    section.style.display = 'block';
+    const list = document.getElementById('habitTipsList');
+    list.innerHTML = '';
+    habits.forEach(h => {
+      const pct = Math.round(h.days.filter(Boolean).length / 7 * 100);
+      let tip = '';
+      if (pct === 0) tip = `Je hebt <b>${h.name}</b> nog niet gedaan deze week. Begin vandaag — ook 1 minuut telt!`;
+      else if (pct < 50) tip = `<b>${h.name}</b> lukt ${pct}% van de tijd. Probeer hem aan een bestaande routine te koppelen.`;
+      else if (pct < 80) tip = `<b>${h.name}</b> gaat goed (${pct}%)! Nog een klein beetje consistenter en het wordt een echte gewoonte.`;
+      else tip = `<b>${h.name}</b> zit op ${pct}% — uitstekend! 🔥 Jij maakt dit een automatisme.`;
+      list.innerHTML += `<div class="tip-card"><div class="tip-icon">${h.icon}</div><div class="tip-body">${tip}</div></div>`;
+    });
+  }
+  // Welkomstbericht één keer per sessie (app opstart)
+  // Maar opnieuw als chat leeg is (nieuw gesprek)
+  if (!coachInitialized || chatHistory.length === 0) {
+    coachInitialized = true;
+    chatHistory = [];
+    document.getElementById('chatMessages').innerHTML = '';
+    const name = profile.name || 'daar';
+    addMessage('ai', `Hey ${name}! 👋 Ik ben je persoonlijke AI coach. Ik ken al jouw ${habits.length} habit${habits.length !== 1 ? 's' : ''}. Wat wil je weten?`);
+  }
+}
+
+function quickAsk(question) {
+  document.getElementById('chatInput').value = question;
+  sendChat();
+}
+
+function addMessage(role, text) {
+  const messages = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'chat-bubble ' + role;
+  div.innerHTML = text;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+  return div;
+}
+
+function getSmartReply(msg) {
+  const m = msg.toLowerCase();
+  const name = profile.name ? profile.name.split(' ')[0] : null;
+  const begroeting = name ? name + '!' : 'je goed bezig!';
+  const streak = calcStreak();
+  const done = habits.filter(h => h.done).length;
+  const total = habits.length;
+
+  // Bereken slechtste en beste habit
+  const sorted = [...habits].sort((a,b) => {
+    const pa = a.days.filter(Boolean).length;
+    const pb = b.days.filter(Boolean).length;
+    return pa - pb;
+  });
+  const worstHabit = sorted[0];
+  const bestHabit = sorted[sorted.length - 1];
+
+  // Motivatie
+  if (m.includes('motivat') || m.includes('motiveer') || m.includes('kan niet') || m.includes('moeilijk')) {
+    const opties = [
+      `Je bent al ${streak} dagen bezig — dat is geen toeval, dat is karakter! 💪 Elke dag dat je doorgaat investeer je in je toekomstige zelf.`,
+      `Weet je wat het verschil is tussen jij en iemand die het opgaf? Jij bent hier nog steeds. 🔥 Dat telt.`,
+      `Motivatie komt en gaat, maar discipline blijft. Jij hebt al ${totalDone} habits voltooid — je kunt dit!`,
+      `Zelfs op slechte dagen: doe gewoon de kleinste versie van je habit. 1 minuut meditatie telt ook. ⚡`,
+    ];
+    return opties[Math.floor(Math.random() * opties.length)];
+  }
+
+  // Verbeteren
+  if (m.includes('verbeter') || m.includes('beter') || m.includes('tips')) {
+    if (habits.length === 0) return 'Voeg eerst een paar habits toe op de Today tab, dan kan ik je persoonlijke tips geven! 🌱';
+    if (worstHabit) {
+      const pct = Math.round(worstHabit.days.filter(Boolean).length / 7 * 100);
+      return `${worstHabit.icon} <b>${worstHabit.name}</b> heeft de meeste aandacht nodig (${pct}% deze week). Probeer hem te koppelen aan iets wat je al elke dag doet — dan vergeet je hem niet! 💡`;
+    }
+  }
+
+  // Wat eerst
+  if (m.includes('eerst') || m.includes('vandaag') || m.includes('beginnen') || m.includes('starten')) {
+    const notDone = habits.filter(h => !h.done);
+    if (notDone.length === 0 && total > 0) return `Wauw, je hebt alles al gedaan vandaag! 🎉 Geniet ervan — je verdient het!`;
+    if (notDone.length > 0) {
+      const morning = notDone.find(h => h.time === 'Morning') || notDone[0];
+      return `Begin met ${morning.icon} <b>${morning.name}</b> — dat geeft je meteen een goed gevoel en maakt de rest makkelijker. 🚀`;
+    }
+    return `Voeg eerst wat habits toe, dan help ik je plannen! ➕`;
+  }
+
+  // Streak vragen
+  if (m.includes('streak') || m.includes('rij') || m.includes('dagen')) {
+    if (streak === 0) return `Je streak is nu 0, maar dat is oké! Voltooi vandaag al je habits en je streak begint opnieuw. Elke kampioen begint bij nul. 💫`;
+    if (streak < 7) return `${streak} dagen streak — goed bezig! De eerste week is de moeilijkste. Nog ${7 - streak} dagen en je hebt je eerste week voltooid! 🔥`;
+    return `${streak} dagen streak — dat is indrukwekkend! Je bent duidelijk iemand die commitments nakomt. Blijf gaan! 🏆`;
+  }
+
+  // Habits missen
+  if (m.includes('mis') || m.includes('vergeet') || m.includes('skip') || m.includes('faal')) {
+    return `Het is normaal om soms te missen — het geheim is: <b>mis nooit twee keer achter elkaar.</b> Eén gemiste dag is een ongeluk, twee is het begin van een nieuwe gewoonte. Morgen is een nieuwe kans! 💪`;
+  }
+
+  // Hoeveel habits
+  if (m.includes('hoeveel') || m.includes('genoeg') || m.includes('teveel')) {
+    if (total === 0) return `Je hebt nog geen habits! Start met slechts 1 of 2 — kwaliteit boven kwantiteit. 🌱`;
+    if (total <= 3) return `${total} habits is perfect om mee te beginnen! Focus op consistentie voordat je er meer toevoegt. 🎯`;
+    if (total > 6) return `Je hebt ${total} habits — dat is ambitieus! Als je moeite hebt om ze bij te houden, focus dan op je top 3 meest belangrijke. 🎯`;
+    return `${total} habits is een goede balans! Zorg dat je ze consistent bijhoudt voordat je er nieuwe toevoegt. ✅`;
+  }
+
+  // Stats vragen
+  if (m.includes('hoe gaat') || m.includes('statistiek') || m.includes('progressie') || m.includes('score')) {
+    if (total === 0) return `Je hebt nog geen habits toegevoegd. Ga naar Today en voeg je eerste habit toe! 🌱`;
+    const pct = total > 0 ? Math.round(habits.reduce((a,h) => a + h.days.filter(Boolean).length, 0) / (total * 7) * 100) : 0;
+    return `Deze week sta je op <b>${pct}% succes rate</b> met ${done}/${total} habits voltooid vandaag. ${pct >= 70 ? 'Dat is uitstekend! 🔥' : pct >= 40 ? 'Goede basis, push door! 💪' : 'Er is ruimte voor groei — ik geloof in je! ⚡'}`;
+  }
+
+  // Beste habit
+  if (m.includes('beste') || m.includes('trots') || m.includes('goed bezig')) {
+    if (bestHabit) {
+      const pct = Math.round(bestHabit.days.filter(Boolean).length / 7 * 100);
+      return `Je beste habit is ${bestHabit.icon} <b>${bestHabit.name}</b> met ${pct}% deze week! 🏆 Wees trots op jezelf — dat is echte discipline.`;
+    }
+    return `Voeg habits toe zodat ik kan zien wat je beste is! ➕`;
+  }
+
+  // Hallo / begroeting
+  if (m.includes('hallo') || m.includes('hoi') || m.includes('hey') || m.includes('hi ') || m === 'hi') {
+    return `Hey ${begroeting} 👋 Wat kan ik voor je doen? Vraag me om tips, motivatie, of een overzicht van je voortgang!`;
+  }
+
+  // Dankjewel
+  if (m.includes('dank') || m.includes('bedankt') || m.includes('thanks')) {
+    return `Graag gedaan! 😊 Onthoud: ik kan tips geven, maar jij doet het echte werk. Blijf gaan! 💪`;
+  }
+
+  // ── APP UITLEG VRAGEN ──
+  if (m.includes('xp') || m.includes('level') || m.includes('punten')) {
+    return `XP staat voor ervaringspunten. Je verdient <b>20 XP</b> voor elke habit die je doet. Bij <b>500 XP</b> ga je een level omhoog! 🎉 Heb je 3+ dagen streak? Dan krijg je <b>2x XP</b>. Bij 7+ dagen zelfs <b>3x XP</b>! Hoe hoger je streak, hoe sneller je levelt. ⚡`;
+  }
+
+  if (m.includes('freeze') || m.includes('bevroren') || m.includes('bescherm')) {
+    return `Een Streak Freeze beschermt je streak als je een dag mist. 🧊 Je verdient er één door een <b>7 dagen streak</b> te bereiken of elk 5e level. Op de Today pagina zie je hoeveel freezes je hebt. Tik erop om hem te gebruiken — handig voor drukke dagen!`;
+  }
+
+  if (m.includes('badge') || m.includes('achievement') || m.includes('prestatie')) {
+    return `Badges verdien je door mijlpalen te bereiken. 🏆 Sommige zijn <b>permanent</b> (zoals "Eerste stap 🌱") en sommige zijn <b>tijdelijk</b> (zoals "On fire 🔥") — die verdwijnen als je de conditie niet meer haalt. Je ziet alle badges op de <b>Profile pagina</b>.`;
+  }
+
+  if (m.includes('missie') || m.includes('mission') || m.includes('dagelijks') || m.includes('uitdaging')) {
+    return `Elke dag krijg je <b>3 willekeurige missies</b> zoals "Doe alle habits vandaag" of "Start voor 10:00". 🎯 Als je een missie voltooit krijg je bonus XP! Je vindt ze onderaan de Today pagina. Wil je ze niet? Tik op "Niet vandaag" en ze verdwijnen voor de rest van de dag.`;
+  }
+
+  if (m.includes('reminder') || m.includes('melding') || m.includes('notificatie')) {
+    return `Je kunt op twee manieren reminders instellen. 🔔 Een <b>algemene reminder</b> via Profile → Reminders, of een <b>reminder per habit</b> — stel die in bij het aanmaken van een habit. Je moet wel notificaties toestaan in je browser. De app moet open of op de achtergrond staan voor de meldingen.`;
+  }
+
+  if (m.includes('thema') || m.includes('kleur') || m.includes('uiterlijk') || m.includes('donker') || m.includes('licht')) {
+    return `Je kunt kiezen uit 4 thema's! 🎨 Ga naar <b>Profile → App thema</b>. Je kunt kiezen uit 🌙 Donker, ☀️ Licht, 🌅 Zonsondergang en 🏆 Kampioen. Het thema wordt automatisch opgeslagen.`;
+  }
+
+  if (m.includes('streak') && (m.includes('wat') || m.includes('hoe') || m.includes('werkt'))) {
+    return `Een streak telt het aantal <b>dagen op rij</b> dat je een habit hebt voltooid. 🔥 Bij 3+ dagen streak krijg je 2x XP, bij 7+ dagen 3x XP! Als je een dag mist gaat je streak terug naar 0 — tenzij je een 🧊 Streak Freeze gebruikt. Je streak gaat maar <b>één keer per dag</b> omhoog.`;
+  }
+
+  if (m.includes('dagboek') || m.includes('journal') || m.includes('schrijven')) {
+    return `Het dagboek vind je op de <b>Progress pagina</b>. 📖 Je kunt daar elke dag een quote, gedachte of motivatie schrijven. Het dagboek is alleen beschikbaar als je <b>minimaal 1 habit hebt voltooid</b> vandaag — het is een beloning! Je notities worden bewaard met datum.`;
+  }
+
+  if (m.includes('habit toevoegen') || m.includes('nieuwe habit') || m.includes('hoe voeg')) {
+    return `Tik op de <b>+ knop</b> rechtsboven op de Today pagina. 🌱 Kies een emoji, geef je habit een naam, kies een tijd (ochtend/middag/avond) en stel optioneel een reminder in. Tik daarna op "Habit aanmaken". Zo simpel is het!`;
+  }
+
+  if (m.includes('verwijder') || m.includes('delete') || m.includes('weghalen') || m.includes('stoppen')) {
+    return `Tik op het 🗑️ icoontje naast een habit om hem te verwijderen. Je krijgt eerst een bevestigingspopup met een waarschuwing als je een streak hebt. Na verwijdering is de habit permanent weg.`;
+  }
+
+  if (m.includes('progress') || m.includes('statistiek') || m.includes('voortgang')) {
+    return `Op de <b>Progress pagina</b> zie je jouw week in een overzicht. 📊 Per dag zie je hoeveel habits je hebt gedaan. Groen = alles gedaan, geel = gedeeltelijk. Daaronder zie je per habit het percentage van deze week. Toekomstige dagen zijn vervaagd.`;
+  }
+
+  if (m.includes('installeer') || m.includes('downloaden') || m.includes('startscherm') || m.includes('thuis') || m.includes('home screen')) {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
+    if (isIOS) {
+      return `Op jouw iPhone/iPad installeer je de app zo: 📱<br><br>1️⃣ Open deze pagina in <b>Safari</b><br>2️⃣ Tik op het <b>deel-icoontje</b> ↑ onderin<br>3️⃣ Scroll naar <b>"Zet op beginscherm"</b><br>4️⃣ Tik op <b>"Voeg toe"</b> rechtsboven<br><br>De app staat dan tussen je andere apps! 🎉`;
+    } else if (isAndroid) {
+      return `Op jouw Android installeer je de app zo: 📱<br><br>1️⃣ Open deze pagina in <b>Chrome</b><br>2️⃣ Tik op de <b>drie puntjes</b> ⋮ rechtsboven<br>3️⃣ Tik op <b>"Toevoegen aan startscherm"</b><br>4️⃣ Tik op <b>"Toevoegen"</b><br><br>De app staat dan op je startscherm! 🎉`;
+    } else {
+      return `Je kunt HabitFlow op 3 manieren installeren: 📱<br><br><b>iPhone/iPad:</b> Open in Safari → deel-icoontje ↑ → "Zet op beginscherm" → "Voeg toe"<br><br><b>Android:</b> Open in Chrome → drie puntjes ⋮ → "Toevoegen aan startscherm"<br><br><b>Computer:</b> Open in Chrome → klik op het installeer-icoontje 📥 in de adresbalk rechtsboven → "Installeren"<br><br>Werkt het niet? Vraag me dan op welk apparaat je zit! 😊`;
+    }
+  }
+
+  if (m.includes('profiel') || m.includes('naam') || m.includes('foto')) {
+    return `Op de <b>Profile pagina</b> kun je je naam aanpassen via het ✏️ icoontje en een profielfoto instellen door op je avatar te tikken. 👤 Je ziet ook je stats, badges, en instellingen voor reminders en thema's.`;
+  }
+
+  if (m.includes('bewijs') || m.includes('foto') || m.includes('timer') || m.includes('bewijzen') || m.includes('verificat')) {
+    return `Bij het aanmaken van een habit kun je een <b>bewijs type</b> kiezen! ✅<br><br>📸 <b>Foto:</b> Als je de habit aanvinkt, vraagt de app om een foto. Zo bewijs je dat je het echt gedaan hebt!<br><br>⏱️ <b>Timer:</b> Stel een aantal minuten in. Je moet de timer laten aflopen voordat je de habit kunt afvinken — perfect voor meditatie, lezen of sporten.<br><br>Je stelt het in bij <b>"+ Habit toevoegen"</b> onder het kopje "Bewijs bij voltooien". Je kunt het ook gewoon op 🚫 Geen laten staan!`;
+  }
+
+  if (m.includes('multiplier') || m.includes('2x') || m.includes('3x') || m.includes('bonus xp')) {
+    return `De XP multiplier activeert automatisch op basis van je streak. 🔥 Bij <b>3+ dagen streak</b> krijg je 2x XP en bij <b>7+ dagen streak</b> zelfs 3x XP! Je ziet de multiplier naast je XP balk. Nog een reden om je streak hoog te houden!`;
+  }
+
+  // Default slimme fallback gebaseerd op habits
+  if (habits.length === 0) {
+    return `Ik zie dat je nog geen habits hebt. Ga naar de Today tab en voeg je eerste habit toe — begin klein, denk groot! 🌱 Vraag me gerust hoe iets werkt in de app!`;
+  }
+  const responses = [
+    `Je hebt ${total} habits en ${totalDone} keer voltooid totaal. ${streak > 0 ? `Je streak van ${streak} dagen laat zien dat je serieus bent! 🔥` : 'Begin vandaag met je streak! 💪'}`,
+    `Mijn tip: focus op je ${worstHabit ? worstHabit.icon + ' ' + worstHabit.name : 'minst consistente habit'} deze week. Kleine verbeteringen leiden tot grote resultaten! 📈`,
+    `Wist je dat je ook vragen kunt stellen over hoe de app werkt? Vraag me bijvoorbeeld "Hoe werkt XP?" of "Wat is een streak freeze?" 😊`,
+  ];
+  return responses[Math.floor(Math.random() * responses.length)];
+}
+
+function sendChat() {
+  if (isTyping) return;
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  addMessage('user', msg);
+
+  isTyping = true;
+  document.getElementById('sendBtn').style.opacity = '0.5';
+  const typingBubble = addMessage('ai typing', '<div class="ai-thinking"><span></span><span></span><span></span></div>');
+
+  // Simuleer denktijd voor een natuurlijk gevoel
+  const delay = 600 + Math.random() * 800;
+  setTimeout(() => {
+    typingBubble.remove();
+    const reply = getSmartReply(msg);
+    addMessage('ai', reply);
+    isTyping = false;
+    document.getElementById('sendBtn').style.opacity = '1';
+  }, delay);
+}
+
+// ── THEMA'S ──
+const THEMES = {
+  dark:     { name: '🌙 Donker' },
+  light:    { name: '☀️ Licht' },
+  sunset:   { name: '🌅 Zonsondergang' },
+  champion: { name: '🏆 Kampioen' },
+};
+
+function setTheme(theme) {
+  document.body.className = document.body.className.replace(/theme-\S+/g, '').trim();
+  if (theme !== 'dark') document.body.classList.add('theme-' + theme);
+  document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('theme-btn-' + theme);
+  if (btn) btn.classList.add('active');
+  document.getElementById('themeStatus').textContent = THEMES[theme]?.name || theme;
+  profile.theme = theme;
+  saveData();
+}
+
+function openThemeModal() {
+  document.getElementById('themeModal').classList.add('open');
+  // Markeer huidig thema
+  const current = profile.theme || 'dark';
+  document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('theme-btn-' + current);
+  if (btn) btn.classList.add('active');
+}
+
+function closeThemeModal(e) {
+  if (e.target === document.getElementById('themeModal'))
+    document.getElementById('themeModal').classList.remove('open');
+}
+
+function applyTheme() {
+  const theme = profile.theme || 'dark';
+  document.body.className = document.body.className.replace(/theme-\S+/g, '').trim();
+  if (theme !== 'dark') document.body.classList.add('theme-' + theme);
+  document.getElementById('themeStatus').textContent = THEMES[theme]?.name || '🌙 Donker';
+}
+
+// ── REMINDERS ──
+let selectedReminderTime = null;
+
+function openReminderModal() {
+  selectedReminderTime = profile.reminderTime || null;
+  document.getElementById('reminderModal').classList.add('open');
+  updateTimeGrid();
+  updateReminderNote();
+}
+
+function closeReminderModal(e) {
+  if (e.target === document.getElementById('reminderModal'))
+    document.getElementById('reminderModal').classList.remove('open');
+}
+
+function toggleReminder(time) {
+  selectedReminderTime = selectedReminderTime === time ? null : time;
+  updateTimeGrid();
+  updateReminderNote();
+}
+
+function updateTimeGrid() {
+  document.querySelectorAll('.time-btn').forEach(btn => {
+    const t = btn.textContent.trim().split(' ').pop();
+    btn.classList.toggle('active', t === selectedReminderTime);
+  });
+}
+
+function updateReminderNote() {
+  const note = document.getElementById('reminderNote');
+  note.textContent = selectedReminderTime
+    ? `Je krijgt elke dag om ${selectedReminderTime} een herinnering 🔔`
+    : 'Selecteer een tijd voor je dagelijkse herinnering';
+}
+
+async function saveReminder() {
+  if (!selectedReminderTime) {
+    profile.reminderTime = null;
+    document.getElementById('reminderStatus').textContent = 'Uit';
+    saveData();
+    document.getElementById('reminderModal').classList.remove('open');
+    showToast('🔕 Reminders uitgeschakeld');
+    return;
+  }
+
+  // Vraag toestemming voor notificaties
+  if ('Notification' in window) {
+    const perm = await Notification.requestPermission();
+    if (perm === 'granted') {
+      profile.reminderTime = selectedReminderTime;
+      saveData();
+      scheduleReminder();
+      document.getElementById('reminderStatus').textContent = selectedReminderTime;
+      document.getElementById('reminderModal').classList.remove('open');
+      showToast('🔔 Reminder ingesteld op ' + selectedReminderTime + '!');
+    } else {
+      showToast('❌ Geef toestemming voor notificaties in je browserinstellingen');
+    }
+  } else {
+    // Fallback: sla op en toon toast op juiste tijd
+    profile.reminderTime = selectedReminderTime;
+    saveData();
+    document.getElementById('reminderStatus').textContent = selectedReminderTime;
+    document.getElementById('reminderModal').classList.remove('open');
+    showToast('🔔 Reminder ingesteld! Houd de app open voor herinneringen.');
+  }
+}
+
+const REMINDER_QUOTES = [
+  "Kleine stappen leiden tot grote veranderingen. 💪",
+  "Jij bent één habit verwijderd van een betere dag. ⚡",
+  "Consistentie verslaat perfectie altijd. 🔥",
+  "Je toekomstige zelf rekent op jou. 🚀",
+  "Elke dag dat je doorgaat is een overwinning. 🏆",
+  "Motivatie start je, discipline houdt je gaande. 💫",
+  "1% beter elke dag = 37x beter na een jaar. 📈",
+  "Mis nooit twee keer achter elkaar. Vandaag telt! ✅",
+  "Gewoontes vormen je karakter. Maak ze goed. 🌟",
+  "De beste tijd om te beginnen was gisteren. De op één na beste tijd is nu. ⏰",
+];
+
+function fireReminder() {
+  const done = habits.filter(h => h.done).length;
+  const total = habits.length;
+  const quote = REMINDER_QUOTES[Math.floor(Math.random() * REMINDER_QUOTES.length)];
+  const streak = bestStreak();
+  const streakLine = streak > 0 ? '🔥 ' + streak + ' dagen streak  |  ' : '';
+  if (Notification.permission === 'granted') {
+    let title, body;
+    if (total > 0 && done < total) {
+      title = 'HabitFlow — Tijd voor je habits! 💪';
+      body = streakLine + (total - done) + '/' + total + ' habits nog te doen\n"' + quote + '"';
+    } else if (total > 0 && done === total) {
+      title = 'HabitFlow 🏆 — Alles gedaan!';
+      body = streakLine + 'Wauw, perfecte dag vandaag!\n"' + quote + '"';
+    } else {
+      title = 'HabitFlow ⚡';
+      body = streakLine + quote;
+    }
+    new Notification(title, { body, icon: '/icon.png', badge: '/icon-192.png', image: '/icon.png' });
+  }
+  localStorage.setItem('hf_lastReminder', todayStr());
+}
+
+function scheduleReminder() {
+  // Reminders worden gecheckt in de globale setInterval hieronder
+}
+
+function initReminders() {
+  if (profile.reminderTime) {
+    document.getElementById('reminderStatus').textContent = profile.reminderTime;
+    selectedReminderTime = profile.reminderTime;
+    if (Notification.permission === 'granted') scheduleReminder();
+  }
+}
+
+// ── PWA INSTALLATIE ──
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // Toon banner na 3 seconden als nog niet geinstalleerd
+  if (!localStorage.getItem('hf_installed')) {
+    setTimeout(() => {
+      document.getElementById('installBanner').classList.add('show');
+    }, 3000);
+  }
+});
+
+window.addEventListener('appinstalled', () => {
+  localStorage.setItem('hf_installed', '1');
+  document.getElementById('installBanner').classList.remove('show');
+  showToast('🎉 App geïnstalleerd! Je vindt hem op je startscherm.');
+  deferredPrompt = null;
+});
+
+function triggerInstall() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(choice => {
+      if (choice.outcome === 'accepted') {
+        localStorage.setItem('hf_installed', '1');
+        showToast('🎉 App wordt geïnstalleerd!');
+      }
+      deferredPrompt = null;
+      document.getElementById('installBanner').classList.remove('show');
+    });
+  } else {
+    // Fallback voor iOS of als prompt al gebruikt is
+    showInstallInstructions();
+  }
+}
+
+function dismissInstall(e) {
+  e.stopPropagation();
+  document.getElementById('installBanner').classList.remove('show');
+  localStorage.setItem('hf_install_dismissed', Date.now());
+}
+
+function showInstallInstructions() {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  document.getElementById('installStepsIOS').style.display = isIOS ? 'block' : 'none';
+  document.getElementById('installStepsAndroid').style.display = isIOS ? 'none' : 'block';
+  document.getElementById('installGuideModal').classList.add('open');
+}
+
+// ── DAGBOEK ──
+let journalEntries = [];
+
+function saveJournalEntry() {
+  const input = document.getElementById('journalInput');
+  const text = input.value.trim();
+  if (!text) { input.focus(); return; }
+  const today = new Date();
+  const dateStr = today.toLocaleDateString('nl-NL', { weekday:'long', day:'numeric', month:'long' });
+  journalEntries.unshift({ id: Date.now(), date: dateStr, text });
+  if (journalEntries.length > 30) journalEntries = journalEntries.slice(0, 30);
+  localStorage.setItem('hf_journal', JSON.stringify(journalEntries));
+  input.value = '';
+  renderJournal();
+  checkBadges();
+  showToast('✨ Opgeslagen in je dagboek!');
+}
+
+function deleteJournalEntry(id) {
+  journalEntries = journalEntries.filter(e => e.id !== id);
+  localStorage.setItem('hf_journal', JSON.stringify(journalEntries));
+  renderJournal();
+}
+
+function renderJournal() {
+  // Check of minimaal 1 habit gedaan is vandaag
+  const donedToday = habits.filter(h => h.done).length;
+  const locked = document.getElementById('journalLocked');
+  const unlocked = document.getElementById('journalUnlocked');
+  if (locked && unlocked) {
+    if (donedToday >= 1) {
+      locked.style.display = 'none';
+      unlocked.style.display = 'block';
+    } else {
+      locked.style.display = 'block';
+      unlocked.style.display = 'none';
+    }
+  }
+
+  const list = document.getElementById('journalList');
+  if (!list) return;
+  if (journalEntries.length === 0) {
+    list.innerHTML = '<p style="color:var(--muted);font-size:0.83rem;text-align:center;padding:16px 0;">Nog geen notities — voltooi een habit en schrijf je eerste! 📝</p>';
+    return;
+  }
+  list.innerHTML = journalEntries.map(e => `
+    <div class="journal-entry">
+      <button class="journal-entry-delete" onclick="deleteJournalEntry(${e.id})">✕</button>
+      <div class="journal-entry-date">${e.date}</div>
+      <div class="journal-entry-text">"${e.text}"</div>
+    </div>`).join('');
+}
+
+function loadJournal() {
+  try {
+    const j = localStorage.getItem('hf_journal');
+    if (j) journalEntries = JSON.parse(j);
+  } catch(e) {}
+}
+
+// ── BADGES / ACHIEVEMENTS ──
+const ALL_BADGES = [
+  // Permanente badges
+  { id:'first_habit',  icon:'🌱', name:'Eerste stap',       desc:'Voeg je eerste habit toe',          temp:false, check: () => habits.length >= 1 },
+  { id:'first_done',   icon:'⭐', name:'Eerste ster',        desc:'Voltooi je eerste habit',           temp:false, check: () => totalDone >= 1 },
+  { id:'five_habits',  icon:'🗂️', name:'Multi-tasker',       desc:'5 habits tegelijk actief',          temp:false, check: () => habits.length >= 5 },
+  { id:'level5',       icon:'⚡', name:'Level 5',            desc:'Bereik level 5',                    temp:false, check: () => level >= 5 },
+  { id:'level10',      icon:'🚀', name:'Raket',              desc:'Bereik level 10',                   temp:false, check: () => level >= 10 },
+  { id:'total10',      icon:'✅', name:'10 voltooid',        desc:'10 habits in totaal voltooid',      temp:false, check: () => totalDone >= 10 },
+  { id:'total50',      icon:'🥈', name:'50 voltooid',        desc:'50 habits in totaal voltooid',      temp:false, check: () => totalDone >= 50 },
+  { id:'total100',     icon:'🥇', name:'100 club',           desc:'100 habits in totaal voltooid',     temp:false, check: () => totalDone >= 100 },
+  { id:'journal1',     icon:'📖', name:'Dagboekschrijver',   desc:'Schrijf je eerste dagboek notitie', temp:false, check: () => journalEntries.length >= 1 },
+  { id:'early_bird',   icon:'🌅', name:'Vroege vogel',       desc:'Voeg een ochtend habit toe',        temp:false, check: () => habits.some(h => h.time === 'Morning') },
+  { id:'night_owl',    icon:'🦉', name:'Nachtbraker',        desc:'Voeg een avond habit toe',          temp:false, check: () => habits.some(h => h.time === 'Evening') },
+
+  // Tijdelijke badges — verdwijnen als je de conditie niet meer haalt
+  { id:'all_done',     icon:'🎯', name:'Perfecte dag',       desc:'Alle habits vandaag voltooid ↻',    temp:true,  check: () => habits.length > 0 && habits.every(h => h.done) },
+  { id:'streak3',      icon:'🔥', name:'On fire',            desc:'3+ dagen streak actief ↻',          temp:true,  check: () => habits.some(h => h.streak >= 3) },
+  { id:'streak7',      icon:'💪', name:'Een week sterk',     desc:'7+ dagen streak actief ↻',          temp:true,  check: () => habits.some(h => h.streak >= 7) },
+  { id:'streak30',     icon:'🏅', name:'Maand meester',      desc:'30+ dagen streak actief ↻',         temp:true,  check: () => habits.some(h => h.streak >= 30) },
+];
+
+let earnedBadges = [];
+let newlyEarned = [];
+
+function loadBadges() {
+  try {
+    const b = localStorage.getItem('hf_badges');
+    if (b) earnedBadges = JSON.parse(b);
+  } catch(e) {}
+}
+
+function checkBadges() {
+  let anyNew = false;
+  let anyLost = false;
+
+  ALL_BADGES.forEach(badge => {
+    const hasIt = earnedBadges.includes(badge.id);
+    const qualifies = badge.check();
+
+    if (!hasIt && qualifies) {
+      earnedBadges.push(badge.id);
+      newlyEarned.push(badge.id);
+      anyNew = true;
+      setTimeout(() => {
+        showToast('🏆 Badge verdiend: ' + badge.icon + ' ' + badge.name + '!');
+      }, 500);
+      // Streak freeze verdienen bij 7 dagen streak badge
+      if (badge.id === 'streak7') setTimeout(earnFreeze, 2000);
+    } else if (hasIt && !qualifies && badge.temp) {
+      earnedBadges = earnedBadges.filter(id => id !== badge.id);
+      anyLost = true;
+      setTimeout(() => {
+        showToast('💔 Badge verloren: ' + badge.icon + ' ' + badge.name + ' — verdien hem terug!');
+      }, 600);
+    }
+  });
+
+  if (anyNew || anyLost) {
+    localStorage.setItem('hf_badges', JSON.stringify(earnedBadges));
+  }
+}
+
+let badgesOpen = false;
+
+function toggleBadges() {
+  badgesOpen = !badgesOpen;
+  document.getElementById('badgesPanel').style.display = badgesOpen ? 'block' : 'none';
+  document.getElementById('badgesArrow').style.transform = badgesOpen ? 'rotate(180deg)' : '';
+  // Update border radius of toggle row
+  document.getElementById('badgesToggleRow').style.borderRadius = badgesOpen ? '16px 16px 0 0' : '';
+  if (badgesOpen) renderBadges();
+}
+
+function renderBadges() {
+  const grid = document.getElementById('badgeGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  // Sorteer: verdiend eerst, dan niet verdiend
+  const sorted = [...ALL_BADGES].sort((a, b) => {
+    const ae = earnedBadges.includes(a.id);
+    const be = earnedBadges.includes(b.id);
+    return be - ae;
+  });
+
+  sorted.forEach(badge => {
+    const earned = earnedBadges.includes(badge.id);
+    const isNew = newlyEarned.includes(badge.id);
+    const card = document.createElement('div');
+    card.className = 'badge-card' + (earned ? ' earned' : '') + (isNew ? ' badge-unlocking' : '');
+    card.innerHTML = `
+      ${isNew ? '<div class="badge-new">NIEUW!</div>' : ''}
+      ${earned && badge.temp ? '<div class="badge-new" style="background:var(--accent);left:6px;right:auto;">↻</div>' : ''}
+      <div class="badge-icon">${badge.icon}</div>
+      <div class="badge-name">${badge.name}</div>
+      <div class="badge-desc">${badge.desc}</div>
+    `;
+    grid.appendChild(card);
+  });
+
+  // Badge teller
+  const earnedCount = earnedBadges.length;
+  const total = ALL_BADGES.length;
+  document.getElementById('profileSub').textContent =
+    'Level ' + level + ' · ' + earnedCount + '/' + total + ' badges';
+  const countLabel = document.getElementById('badgeCountLabel');
+  if (countLabel) countLabel.textContent = earnedCount + '/' + total;
+}
+
+let habitToDelete = null;
+
+function deleteHabit(id, e) {
+  e.stopPropagation();
+  const h = habits.find(x => x.id === id);
+  if (!h) return;
+  habitToDelete = id;
+
+  // Vul modal in
+  document.getElementById('deleteModalIcon').textContent = h.icon;
+  document.getElementById('deleteModalTitle').textContent = '"' + h.name + '" verwijderen?';
+  document.getElementById('deleteModalDesc').textContent = 'Weet je zeker dat je deze habit wil verwijderen? Dit kan niet ongedaan worden gemaakt.';
+
+  const streakEl = document.getElementById('deleteModalStreak');
+  if (h.streak > 0) {
+    streakEl.textContent = '🔥 Je verliest je streak van ' + h.streak + ' dagen!';
+    streakEl.style.display = 'inline-block';
+  } else {
+    streakEl.style.display = 'none';
+  }
+
+  document.getElementById('deleteConfirmBtn').onclick = confirmDelete;
+  document.getElementById('deleteModal').classList.add('open');
+}
+
+function confirmDelete() {
+  if (!habitToDelete) return;
+  const h = habits.find(x => x.id === habitToDelete);
+  habits = habits.filter(x => x.id !== habitToDelete);
+  habitToDelete = null;
+  document.getElementById('deleteModal').classList.remove('open');
+  render();
+  saveData();
+  checkBadges();
+  if (h) showToast('🗑️ ' + h.name + ' verwijderd');
+}
+
+function closeDeleteModal() {
+  habitToDelete = null;
+  document.getElementById('deleteModal').classList.remove('open');
+}
+
+function scheduleHabitReminders() {
+  // Check elke 30 seconden voor habit reminders
+  // (interval al gestart in initReminders, we hergebruiken die)
+}
+
+function checkHabitReminders() {
+  if (Notification.permission !== 'granted') return;
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const currentTime = hh + ':' + mm;
+  const lastKey = 'hf_habit_reminder_' + todayStr();
+  let firedToday = [];
+  try { firedToday = JSON.parse(localStorage.getItem(lastKey)) || []; } catch(e) {}
+
+  habits.forEach(h => {
+    if (!h.reminder) return;
+    if (h.done) return; // Al gedaan, geen reminder nodig
+    if (firedToday.includes(h.id)) return; // Al gestuurd vandaag
+    if (h.reminder === currentTime) {
+      const quote = REMINDER_QUOTES[Math.floor(Math.random() * REMINDER_QUOTES.length)];
+      const streakTxt = h.streak > 0 ? '🔥 ' + h.streak + ' dagen streak\n' : '';
+      new Notification(h.icon + ' ' + h.name + ' — HabitFlow', {
+        body: streakTxt + 'Vergeet je habit niet! 💪\n"' + quote + '"',
+        icon: '/icon.png',
+        badge: '/icon-192.png'
+      });
+      firedToday.push(h.id);
+      localStorage.setItem(lastKey, JSON.stringify(firedToday));
+    }
+  });
+}
+
+// ── BEWIJS SYSTEEM ──
+let selectedProof = 'none';
+let proofHabitId = null;
+let timerInterval = null;
+let timerSecondsLeft = 0;
+let timerTotalSeconds = 0;
+let timerRunning = false;
+
+function selectProof(type) {
+  selectedProof = type;
+  document.querySelectorAll('.proof-opt').forEach(b => b.classList.remove('active'));
+  document.getElementById('proof-' + type).classList.add('active');
+  document.getElementById('timerMinutesGroup').style.display = type === 'timer' ? 'block' : 'none';
+}
+
+function openProofModal(habitId) {
+  proofHabitId = habitId;
+  const h = habits.find(x => x.id === habitId);
+  if (!h) return;
+  clearInterval(timerInterval);
+  timerRunning = false;
+
+  if (h.proofType === 'photo') {
+    document.getElementById('proofPhotoSection').style.display = 'block';
+    document.getElementById('proofTimerSection').style.display = 'none';
+    document.getElementById('proofPhotoTitle').textContent = h.icon + ' ' + h.name;
+    document.getElementById('photoPreviewImg').style.display = 'none';
+    document.getElementById('photoConfirmBtn').style.opacity = '0.4';
+    document.getElementById('photoConfirmBtn').style.pointerEvents = 'none';
+    document.getElementById('proofPhotoInput').value = '';
+  } else if (h.proofType === 'timer') {
+    document.getElementById('proofPhotoSection').style.display = 'none';
+    document.getElementById('proofTimerSection').style.display = 'block';
+    document.getElementById('proofTimerTitle').textContent = h.icon + ' ' + h.name;
+    document.getElementById('proofTimerSub').textContent = h.timerMins + ' minuten — houd vol!';
+    document.getElementById('timerDoneSection').style.display = 'none';
+    document.getElementById('timerControls').style.display = 'block';
+    document.getElementById('timerStartBtn').textContent = '▶ Start';
+    timerSecondsLeft = h.timerMins * 60;
+    timerTotalSeconds = timerSecondsLeft;
+    updateTimerDisplay();
+    updateTimerRing(0);
+  }
+  document.getElementById('proofModal').classList.add('open');
+}
+
+function handleProofPhoto(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = document.getElementById('photoPreviewImg');
+    img.src = e.target.result;
+    img.style.display = 'block';
+    document.getElementById('photoConfirmBtn').style.opacity = '1';
+    document.getElementById('photoConfirmBtn').style.pointerEvents = 'auto';
+  };
+  reader.readAsDataURL(file);
+}
+
+function toggleTimer() {
+  if (timerRunning) {
+    clearInterval(timerInterval);
+    timerRunning = false;
+    document.getElementById('timerStartBtn').textContent = '▶ Hervat';
+    return;
+  }
+  timerRunning = true;
+  document.getElementById('timerStartBtn').textContent = '⏸ Pauzeer';
+  timerInterval = setInterval(() => {
+    timerSecondsLeft--;
+    updateTimerDisplay();
+    updateTimerRing((timerTotalSeconds - timerSecondsLeft) / timerTotalSeconds);
+    if (timerSecondsLeft <= 0) {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      document.getElementById('timerControls').style.display = 'none';
+      document.getElementById('timerDoneSection').style.display = 'block';
+      showToast('⏱️ Timer klaar! Habit voltooien?');
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(timerSecondsLeft / 60);
+  const s = timerSecondsLeft % 60;
+  document.getElementById('timerDisplay').textContent =
+    String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+
+function updateTimerRing(progress) {
+  const circumference = 377;
+  const offset = circumference - (progress * circumference);
+  document.getElementById('timerRingFill').style.strokeDashoffset = offset;
+}
+
+function confirmProof() {
+  document.getElementById('proofModal').classList.remove('open');
+  clearInterval(timerInterval);
+  completeHabitById(proofHabitId);
+  proofHabitId = null;
+}
+
+function skipProof() {
+  document.getElementById('proofModal').classList.remove('open');
+  clearInterval(timerInterval);
+  timerRunning = false;
+  completeHabitById(proofHabitId);
+  proofHabitId = null;
+}
+
+// ── DAGELIJKSE MISSIES ──
+const MISSION_POOL = [
+  { id:'m1', icon:'⚡', name:'Doe 1 habit voor 10:00',    xp:30,  check: () => { const h = new Date().getHours(); return h >= 10 && habits.some(h => h.done); } },
+  { id:'m2', icon:'🎯', name:'Doe alle habits vandaag',    xp:50,  check: () => habits.length > 0 && habits.every(h => h.done) },
+  { id:'m3', icon:'🔥', name:'Verleng je streak vandaag',  xp:25,  check: () => habits.some(h => h.done && h.streak >= 1) },
+  { id:'m4', icon:'💧', name:'Doe 2 habits voor 12:00',    xp:35,  check: () => { const h = new Date().getHours(); return h >= 12 && habits.filter(h => h.done).length >= 2; } },
+  { id:'m5', icon:'🌅', name:'Start je dag met een habit', xp:20,  check: () => { const h = new Date().getHours(); return h < 11 && habits.some(h => h.done); } },
+  { id:'m6', icon:'🏃', name:'Doe een ochtend habit',      xp:25,  check: () => habits.some(h => h.done && h.time === 'Morning') },
+  { id:'m7', icon:'🌙', name:'Doe een avond habit',        xp:25,  check: () => habits.some(h => h.done && h.time === 'Evening') },
+  { id:'m8', icon:'💪', name:'Doe 3 habits op één dag',    xp:45,  check: () => habits.filter(h => h.done).length >= 3 },
+  { id:'m9', icon:'⭐', name:'Verdien 40+ XP vandaag',     xp:20,  check: () => xp >= 40 },
+];
+
+let todayMissions = [];
+let completedMissions = [];
+let missionsSkipped = false;
+let missionsOpen = false;
+
+function loadMissions() {
+  try {
+    const saved = localStorage.getItem('hf_missions_' + todayStr());
+    if (saved) {
+      const d = JSON.parse(saved);
+      todayMissions = d.missions || [];
+      completedMissions = d.completed || [];
+      missionsSkipped = d.skipped || false;
+    } else {
+      // Genereer 3 willekeurige missies voor vandaag
+      const shuffled = [...MISSION_POOL].sort(() => Math.random() - 0.5);
+      todayMissions = shuffled.slice(0, 3).map(m => m.id);
+      completedMissions = [];
+      missionsSkipped = false;
+      saveMissions();
+    }
+  } catch(e) {}
+}
+
+function saveMissions() {
+  localStorage.setItem('hf_missions_' + todayStr(), JSON.stringify({
+    missions: todayMissions, completed: completedMissions, skipped: missionsSkipped
+  }));
+}
+
+function skipMissions() {
+  missionsSkipped = true;
+  saveMissions();
+  document.getElementById('missionsWrap').style.display = 'none';
+  showToast('👍 Missies verborgen voor vandaag');
+}
+
+function toggleMissions() {
+  missionsOpen = !missionsOpen;
+  document.getElementById('missionsToggle').classList.toggle('open', missionsOpen);
+  document.getElementById('missionsBody').classList.toggle('open', missionsOpen);
+}
+
+function checkMissions() {
+  if (missionsSkipped || todayMissions.length === 0) return;
+  let anyNew = false;
+  todayMissions.forEach(mid => {
+    if (completedMissions.includes(mid)) return;
+    const mission = MISSION_POOL.find(m => m.id === mid);
+    if (mission && mission.check()) {
+      completedMissions.push(mid);
+      anyNew = true;
+      saveMissions();
+      setTimeout(() => {
+        showToast('🎯 Missie voltooid: ' + mission.icon + ' ' + mission.name + ' +' + mission.xp + ' XP!');
+        gainXP(mission.xp);
+      }, 800);
+    }
+  });
+  if (anyNew) renderMissions();
+}
+
+function renderMissions() {
+  const wrap = document.getElementById('missionsWrap');
+  if (!wrap) return;
+
+  if (missionsSkipped || habits.length === 0) {
+    wrap.style.display = 'none';
+    return;
+  }
+  wrap.style.display = 'block';
+
+  const list = document.getElementById('missionsList');
+  const doneCount = document.getElementById('missionsDoneCount');
+  if (!list) return;
+
+  const done = completedMissions.length;
+  const total = todayMissions.length;
+  doneCount.textContent = done + '/' + total;
+
+  list.innerHTML = todayMissions.map(mid => {
+    const mission = MISSION_POOL.find(m => m.id === mid);
+    if (!mission) return '';
+    const isDone = completedMissions.includes(mid);
+    return `<div class="mission-item">
+      <div class="mission-check ${isDone ? 'done' : ''}">${isDone ? '✓' : ''}</div>
+      <div class="mission-info">
+        <div class="mission-name ${isDone ? 'done' : ''}">${mission.icon} ${mission.name}</div>
+        <div class="mission-reward">+${mission.xp} XP</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── STREAK FREEZE ──
+let streakFreezes = 0;
+
+function loadFreezes() {
+  streakFreezes = parseInt(localStorage.getItem('hf_freezes')) || 0;
+}
+
+function earnFreeze() {
+  streakFreezes++;
+  localStorage.setItem('hf_freezes', streakFreezes);
+  updateFreezeUI();
+  showToast('🧊 Streak Freeze verdiend! Je hebt er nu ' + streakFreezes);
+}
+
+function useStreakFreeze() {
+  if (streakFreezes <= 0) {
+    showToast('❌ Geen Streak Freezes meer! Verdien er een door 7 dagen op rij alles te doen.');
+    return;
+  }
+  if (!confirm('🧊 Streak Freeze gebruiken? Je streak blijft beschermd voor vandaag.')) return;
+  streakFreezes--;
+  localStorage.setItem('hf_freezes', streakFreezes);
+  // Markeer vandaag als beschermd
+  habits = habits.map(h => ({ ...h, done: true, frozenToday: true }));
+  saveData();
+  render();
+  updateFreezeUI();
+  showToast('🧊 Streak Freeze gebruikt! Je streak is veilig voor vandaag!');
+}
+
+function updateFreezeUI() {
+  const bar = document.getElementById('freezeBar');
+  const count = document.getElementById('freezeCount');
+  const quickBtn = document.getElementById('freezeQuickBtn');
+  if (!bar) return;
+  if (streakFreezes > 0) {
+    bar.style.display = 'flex';
+    count.textContent = 'x' + streakFreezes;
+  } else {
+    bar.style.display = 'none';
+  }
+  if (quickBtn) quickBtn.style.display = streakFreezes > 0 ? 'block' : 'none';
+}
+
+// ── XP MULTIPLIER ──
+function getXPMultiplier() {
+  const streak = bestStreak();
+  if (streak >= 7) return 3;
+  if (streak >= 3) return 2;
+  return 1;
+}
+
+function updateMultiplierUI() {
+  const el = document.getElementById('xpMultiplier');
+  if (!el) return;
+  const mult = getXPMultiplier();
+  if (mult > 1) {
+    el.style.display = 'inline-flex';
+    el.textContent = mult + 'x 🔥';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+// ── COUNTDOWN TIMER ──
+function updateCountdown() {
+  const now = new Date();
+  const end = new Date();
+  end.setHours(23, 59, 59, 0);
+  const diff = end - now;
+  const hours = Math.floor(diff / 3600000);
+  const mins = Math.floor((diff % 3600000) / 60000);
+
+  const bar = document.getElementById('countdownBar');
+  const timeEl = document.getElementById('countdownTime');
+  const labelEl = document.getElementById('countdownLabel');
+  const emojiEl = document.getElementById('countdownEmoji');
+  if (!bar || !timeEl) return;
+
+  const undone = habits.filter(h => !h.done).length;
+  if (undone === 0 || habits.length === 0) {
+    bar.className = 'countdown-bar';
+    return;
+  }
+
+  const timeStr = (hours > 0 ? hours + 'u ' : '') + mins + 'min';
+
+  if (hours < 1) {
+    // Minder dan 1 uur — urgent rood
+    bar.className = 'countdown-bar urgent';
+    emojiEl.textContent = '🚨';
+    timeEl.textContent = timeStr;
+    labelEl.textContent = 'Nog ' + undone + ' habit' + (undone > 1 ? 's' : '') + ' te doen — streak dreigt te breken!';
+  } else if (hours < 3) {
+    // Minder dan 3 uur — geel waarschuwing
+    bar.className = 'countdown-bar warning';
+    emojiEl.textContent = '⏰';
+    timeEl.textContent = timeStr;
+    labelEl.textContent = 'Nog ' + undone + ' habit' + (undone > 1 ? 's' : '') + ' over voor middernacht';
+  } else {
+    bar.className = 'countdown-bar';
+  }
+}
+
+function buildEmojiGrid() {
+  const grid = document.getElementById('emojiGrid');
+  EMOJIS.forEach(e => {
+    const btn = document.createElement('button');
+    btn.className = 'emoji-btn' + (e === selectedEmoji ? ' selected' : '');
+    btn.textContent = e;
+    btn.onclick = () => { document.querySelectorAll('.emoji-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); selectedEmoji = e; };
+    grid.appendChild(btn);
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function resetAll() {
+  habits = []; xp = 0; level = 1; totalDone = 0; profile = { name: '', photo: null };
+  updateXP(); render(); saveData(); showToast('🗑️ Alle data gereset!');
+}
+
+loadData();
+loadJournal();
+loadBadges();
+loadFreezes();
+loadMissions();
+buildEmojiGrid();
+setGreeting();
+render();
+updateXP();
+loadInsight();
+applyTheme();
+initReminders();
+
+// Update countdown elke minuut
+setInterval(updateCountdown, 60 * 1000);
+updateCountdown();
+
+// Controleer elke 30 seconden: nieuwe dag + reminders
+setInterval(() => {
+  const lastDate = localStorage.getItem('hf_lastDate');
+  if (lastDate && lastDate !== todayStr()) {
+    loadData();
+    render();
+    showToast('🌅 Nieuwe dag! Je habits zijn gereset.');
+  }
+  // Check habit reminders
+  checkHabitReminders();
+  // Check algemene reminder
+  if (profile.reminderTime) {
+    const now = new Date();
+    const [rHour, rMin] = profile.reminderTime.split(':').map(Number);
+    const isTime = now.getHours() === rHour && now.getMinutes() === rMin;
+    const lastReminder = localStorage.getItem('hf_lastReminder');
+    if (isTime && lastReminder !== todayStr()) {
+      fireReminder();
+    }
+  }
+}, 30 * 1000);
+</script>
+<!-- BEWIJS MODAL -->
+<div class="proof-modal" id="proofModal">
+  <div class="proof-sheet">
+    <!-- Foto bewijs -->
+    <div id="proofPhotoSection">
+      <div style="font-size:2.5rem;margin-bottom:10px;">📸</div>
+      <div class="proof-title" id="proofPhotoTitle">Bewijs je habit</div>
+      <div class="proof-sub">Maak een foto als bewijs dat je deze habit hebt gedaan!</div>
+      <img id="photoPreviewImg" class="photo-preview-img">
+      <div class="photo-upload-area" onclick="document.getElementById('proofPhotoInput').click()">
+        📷 Tik om een foto te maken of uploaden
+      </div>
+      <input type="file" id="proofPhotoInput" accept="image/*" capture="environment" style="display:none" onchange="handleProofPhoto(event)">
+      <div style="display:flex;gap:8px;">
+        <button class="proof-btn secondary" onclick="skipProof()" style="flex:1;">Overslaan</button>
+        <button class="proof-btn" id="photoConfirmBtn" onclick="confirmProof()" style="flex:1;opacity:0.4;pointer-events:none;">Bevestig ✓</button>
+      </div>
+    </div>
+    <!-- Timer bewijs -->
+    <div id="proofTimerSection" style="display:none;">
+      <div class="proof-title" id="proofTimerTitle">Timer</div>
+      <div class="proof-sub" id="proofTimerSub">Houd vol tot de timer klaar is!</div>
+      <div class="timer-ring">
+        <svg width="140" height="140" viewBox="0 0 140 140">
+          <defs>
+            <linearGradient id="timerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style="stop-color:var(--accent)"/>
+              <stop offset="100%" style="stop-color:var(--accent2)"/>
+            </linearGradient>
+          </defs>
+          <circle class="timer-ring-bg" cx="70" cy="70" r="60"/>
+          <circle class="timer-ring-fill" id="timerRingFill" cx="70" cy="70" r="60" stroke-dasharray="377" stroke-dashoffset="0"/>
+        </svg>
+        <div class="timer-display" id="timerDisplay">00:00</div>
+      </div>
+      <div id="timerControls">
+        <button class="proof-btn" id="timerStartBtn" onclick="toggleTimer()">▶ Start</button>
+        <button class="proof-btn secondary" onclick="skipProof()">Overslaan</button>
+      </div>
+      <div id="timerDoneSection" style="display:none;">
+        <div style="font-size:2rem;margin-bottom:8px;">🎉</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:16px;">Timer voltooid!</div>
+        <button class="proof-btn" onclick="confirmProof()" style="width:100%;">Habit voltooien ✓</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').then(reg => {
+      // Controleer elke keer op updates
+      reg.update();
+      // Als er een nieuwe versie is, laad de pagina opnieuw
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'activated') {
+            // Bewaar data voor reload
+            console.log('HabitFlow bijgewerkt!');
+          }
+        });
+      });
+    });
+  }
+</script>
+</body>
+</html>
